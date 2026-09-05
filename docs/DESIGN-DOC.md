@@ -55,6 +55,8 @@ See GAME-DESIGN §16 and §16b. Headlines: bot RP capped at 100/day; stances fro
 
 **Stubbed:** world map (result card offers a re-challenge card), leaderboard, inbox, Supabase (package not installed).
 
-**Process:** public repo `diegobdesign/coffee-beans-war`, `main` protected, feature branches, PR per slice with the preview URL, tsc before every commit, Vercel deploy on the first commit that renders anything. Order of slices: 1 scaffold + CI + deploy, 2 sim + goldens, 3 duel scene rendering a static stage, 4 gesture + shot playback, 5 Spotter + fog + calls, 6 bot + KO + receipt + One more go, 7 perf pass on device, 8 playtest round 1.
+**Live (from 2026-09-05 14:31):** https://coffee-beans-war.vercel.app · repo https://github.com/diegobdesign/coffee-beans-war · Vercel project `coffee-beans-war` (team Diego's projects). Slice 1 merged as PR #1.
+
+**Process:** public repo `diegobdesign/coffee-beans-war`, `main` protected by the `protect-main` ruleset (PR + green `check` required, no deletes, no force-push), feature branches, PR per slice with the preview URL, tsc before every commit, Vercel deploy on the first commit that renders anything. Order of slices: 1 scaffold + CI + deploy, 2 sim + goldens, 3 duel scene rendering a static stage, 4 gesture + shot playback, 5 Spotter + fog + calls, 6 bot + KO + receipt + One more go, 7 perf pass on device, 8 playtest round 1.
 
 *Written 2026-09-05 by Smith after the four seat docs landed. Update this file when a decision here changes; the seat docs own the detail.*

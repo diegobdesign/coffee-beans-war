@@ -634,7 +634,7 @@ Target: **60 fps on a 2022 mid-range Android (Pixel 6a / Galaxy A53 class) in Ch
 | Draw calls | ≤ 40 | ≤ 30 |
 | Materials | 1 opaque Lambert (vertex colours), 1 transparent (glass, steam, particles share it via alpha), 1 sky shader, 1 flood material | same |
 | Lights | 1 directional (casting) + 1 hemisphere. Nothing else, ever | same |
-| Shadow map | 1024² mobile, 2048² desktop, `PCFSoftShadowMap` | same map, tighter frustum |
+| Shadow map | 1024² mobile, 2048² desktop, `PCFShadowMap` (PCFSoft was deprecated in Three 0.185; corrected 2026-09-05) | same map, tighter frustum |
 | Textures in VRAM | face atlas 1024² (1 MB), steam 128², particle 64². That is the complete list | same |
 | Steam sprites | ≤ 40 (20 under reduced motion) | ≤ 80 in sudden death |
 | Particles alive | ≤ 24 per event, ≤ 96 total, one instanced pool | same |

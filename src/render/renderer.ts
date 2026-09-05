@@ -2,7 +2,7 @@ import {
   Color,
   Fog,
   NoToneMapping,
-  PCFSoftShadowMap,
+  PCFShadowMap,
   Scene,
   SRGBColorSpace,
   WebGLRenderer,
@@ -24,7 +24,7 @@ export function createGl(canvas: HTMLCanvasElement): Gl {
   renderer.toneMapping = NoToneMapping;
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = PCFSoftShadowMap;
+  renderer.shadowMap.type = PCFShadowMap;
   const isMobile = matchMedia('(pointer: coarse)').matches;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
 
