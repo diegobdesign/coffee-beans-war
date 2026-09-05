@@ -22,6 +22,7 @@ const CALL_TEXT: Record<Call, string> = { close: 'Close.', short: 'Short.', long
 const YOU: Side = 0;
 
 export interface DuelController {
+  readonly renderer: DuelView['renderer'];
   frame(f: Frame): void;
   dispose(): void;
 }
@@ -266,6 +267,7 @@ export function createDuel(
   showAim(hud.readAim());
 
   return {
+    renderer: view.renderer,
     frame(f) {
       gesture.flush();
       if (phase === 'playing' && playback !== null) {

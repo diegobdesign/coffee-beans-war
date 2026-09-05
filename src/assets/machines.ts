@@ -1,5 +1,6 @@
 import { BoxGeometry, CylinderGeometry, Group, Mesh, SphereGeometry, TorusGeometry } from 'three';
 import { glass, opaque, paint } from '../render/materials';
+import { mergeByMaterial } from '../render/merge';
 import { TOKENS } from '../render/tokens';
 import type { Machine } from '../sim/types';
 
@@ -107,5 +108,13 @@ export function createMachine(kind: Machine, accentHex: number): Group {
       break;
     }
   }
-  return g;
+  const out = new Group();
+  const solid = mergeByMaterial(g, opaque);
+  if (solid !== null) out.add(solid);
+  const clear = mergeByMaterial(g, glass);
+  if (clear !== null) {
+    clear.castShadow = false;
+    out.add(clear);
+  }
+  return out;
 }

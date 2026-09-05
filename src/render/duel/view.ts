@@ -1,17 +1,16 @@
 import { OrthographicCamera } from 'three';
 import type { Group, Object3D, Scene, WebGLRenderer } from 'three';
-import { createBean, type Bean } from '../../assets/bean';
-import { createMachine } from '../../assets/machines';
+import type { Bean } from '../../assets/bean';
 import type { Frame } from '../../core/clock';
-import { buildStage as buildStageProfile, heightAt, type Stage } from '../../sim/terrain';
 import { STAGE_WIDTH } from '../../sim/rules';
+import { buildStage as buildStageProfile, type Stage } from '../../sim/terrain';
 import type { DuelSetup, Side } from '../../sim/types';
 import { createDuelCamera, fitDuelCamera } from '../cameras';
 import { addLights } from '../lights';
 import { createGl } from '../renderer';
 import { createFogVeil, FOG_LAYER, type FogVeil } from './fog';
+import { buildDuelGraph, type GraphActor } from './graph';
 import { createShotLayer, type ShotLayer } from './shot';
-import { buildStage } from './stage';
 
 export interface DuelViewOptions {
   readonly roast: readonly [number, number];
@@ -35,6 +34,7 @@ export interface DuelView {
   hitReact(side: Side): void;
   shake(): void;
   hitStop(ms: number): void;
+  /** render pass only; call once per frame after update */
   frame(f: Frame): void;
   dispose(): void;
 }
@@ -49,9 +49,22 @@ interface Actor {
   forward: 1 | -1;
   aimTarget: number | null;
   aimCurrent: number;
-  arm: Object3D | null;
+  arm: Object3D;
   squashT: number;
   hitT: number;
+}
+
+function toActor(a: GraphActor): Actor {
+  return {
+    bean: a.bean,
+    machine: a.machine,
+    forward: a.forward,
+    aimTarget: null,
+    aimCurrent: 0,
+    arm: a.bean.arm,
+    squashT: 0,
+    hitT: 0,
+  };
 }
 
 export function createDuelView(
@@ -72,27 +85,11 @@ export function createDuelView(
   gl.scene.add(key.target);
 
   const stage = buildStageProfile(setup);
-  gl.scene.add(buildStage(setup, stage));
+  const graph = buildDuelGraph(setup, opts.roast, opts.accent);
+  gl.scene.add(graph.group);
   const shots = createShotLayer(gl.scene);
   const fog = createFogVeil(gl.scene);
-
-  const actors: [Actor, Actor] = [0, 1].map((i) => {
-    const side = i as Side;
-    const s = setup.sides[side];
-    const forward: 1 | -1 = side === 0 ? 1 : -1;
-    const bean = createBean(s.beanClass, opts.roast[side]);
-    bean.group.position.set(stage.beanX[side], stage.beanY[side] + 0.62, 0);
-    bean.group.rotation.y = forward === 1 ? 0 : Math.PI;
-    gl.scene.add(bean.group);
-    const mx = stage.beanX[side] + forward * 1.3;
-    const machine = createMachine(s.machine, opts.accent[side]);
-    machine.position.set(mx, heightAt(stage, mx), 0.1);
-    machine.rotation.y = forward === 1 ? 0 : Math.PI;
-    gl.scene.add(machine);
-    // the far arm is the last child added in createBean (z = +1 side)
-    const arm = bean.group.children[bean.group.children.length - 1] ?? null;
-    return { bean, machine, forward, aimTarget: null, aimCurrent: 0, arm, squashT: 0, hitT: 0 };
-  }) as [Actor, Actor];
+  const actors: [Actor, Actor] = [toActor(graph.actors[0]), toActor(graph.actors[1])];
 
   const camera = createDuelCamera(STAGE_WIDTH, 16 / 9);
   camera.layers.enable(FOG_LAYER);
@@ -104,6 +101,7 @@ export function createDuelView(
   let baseY = 0;
   let liftFrom = 0;
   let liftMs = 0;
+
   const layout = (): void => {
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -127,6 +125,7 @@ export function createDuelView(
 
   const renderAll = (): void => {
     const r = gl.renderer;
+    r.info.reset();
     r.setScissorTest(false);
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -162,8 +161,7 @@ export function createDuelView(
       liftMs = ms / 1000;
     },
     setAim(side, angleDd) {
-      const a = actors[side];
-      a.aimTarget = angleDd;
+      actors[side].aimTarget = angleDd;
     },
     squash(side) {
       actors[side].squashT = 0.08;
@@ -171,6 +169,7 @@ export function createDuelView(
     hitReact(side) {
       actors[side].hitT = 0.6;
       actors[side].squashT = 0.08;
+      gl.renderer.shadowMap.needsUpdate = true;
     },
     shake() {
       shakeT = 0.18;
@@ -192,10 +191,8 @@ export function createDuelView(
         const rad = (a.aimCurrent / 10) * (Math.PI / 180);
         // machines pivot on their base toward the aim; the far arm points along it
         a.machine.rotation.z = a.aimTarget === null ? 0 : -rad * 0.6;
-        if (a.arm !== null) {
-          a.arm.rotation.z = a.aimTarget === null ? 0 : Math.PI / 2 - rad;
-          a.arm.rotation.x = a.aimTarget === null ? 0.35 : 0;
-        }
+        a.arm.rotation.z = a.aimTarget === null ? 0 : Math.PI / 2 - rad;
+        a.arm.rotation.x = a.aimTarget === null ? 0.35 : 0;
         if (a.squashT > 0) {
           a.squashT -= f.dt;
           a.bean.body.scale.y = a.squashT > 0.04 ? 0.85 : 1.15;
@@ -209,7 +206,7 @@ export function createDuelView(
       if (shakeT > 0) {
         shakeT -= f.dt;
         const decay = Math.max(0, shakeT / 0.18);
-        const amp = 0.25 * decay * decay; // world units, ~6px
+        const amp = 0.25 * decay * decay;
         const phase = shakeT * 3 * Math.PI * 2 * (1 / 0.18);
         camera.position.y = baseY + amp * Math.sin(phase);
         camera.position.x = STAGE_WIDTH / 2 + amp * 0.5 * Math.cos(phase * 1.3);

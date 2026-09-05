@@ -8,6 +8,7 @@ import {
   Vector2,
 } from 'three';
 import { opaque, paint } from '../render/materials';
+import { mergeByMaterial } from '../render/merge';
 import { TOKENS } from '../render/tokens';
 import type { BeanClass } from '../sim/types';
 
@@ -36,7 +37,10 @@ function profile(): Vector2[] {
 
 export interface Bean {
   group: Group;
+  /** body, crease, face, legs and the near arm as one mesh */
   body: Mesh;
+  /** the far arm, animated separately: it points along the aim */
+  arm: Mesh;
 }
 
 export function createBean(cls: BeanClass, roastHex: number): Bean {
@@ -72,14 +76,22 @@ export function createBean(cls: BeanClass, roastHex: number): Bean {
   for (const z of [-0.12, 0.12]) {
     const leg = new Mesh(limbGeo, opaque);
     leg.position.set(0, -0.55, z * p.d);
-    leg.castShadow = true;
     group.add(leg);
   }
-  for (const z of [-1, 1]) {
-    const arm = new Mesh(limbGeo, opaque);
-    arm.position.set(0.05, -0.05, z * (0.5 * p.d + 0.08));
-    arm.rotation.x = z * 0.35;
-    group.add(arm);
-  }
-  return { group, body };
+  const nearArm = new Mesh(limbGeo, opaque);
+  nearArm.position.set(0.05, -0.05, -(0.5 * p.d + 0.08));
+  nearArm.rotation.x = -0.35;
+  group.add(nearArm);
+
+  // merge everything above into one draw; the far arm stays separate so it can point along the aim
+  const merged = mergeByMaterial(group, opaque);
+  if (merged === null) throw new Error('bean merge');
+  const out = new Group();
+  out.add(merged);
+  const arm = new Mesh(limbGeo, opaque);
+  arm.position.set(0.05, -0.05, 0.5 * p.d + 0.08);
+  arm.rotation.x = 0.35;
+  arm.castShadow = true;
+  out.add(arm);
+  return { group: out, body: merged, arm };
 }
