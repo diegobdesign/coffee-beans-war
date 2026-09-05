@@ -375,3 +375,141 @@ body {
     justify-self: end;
   }
 }
+
+/* slice 6: the receipt */
+.receipt-host {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: max(16px, env(safe-area-inset-top));
+  pointer-events: none;
+}
+.receipt {
+  pointer-events: auto;
+  width: min(320px, calc(100vw - 32px));
+  background: var(--paper);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  padding: 18px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font: 400 14px/1.3 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  clip-path: polygon(
+    0 0,
+    3% 6px,
+    6% 0,
+    9% 6px,
+    12% 0,
+    15% 6px,
+    18% 0,
+    21% 6px,
+    24% 0,
+    27% 6px,
+    30% 0,
+    33% 6px,
+    36% 0,
+    39% 6px,
+    42% 0,
+    45% 6px,
+    48% 0,
+    51% 6px,
+    54% 0,
+    57% 6px,
+    60% 0,
+    63% 6px,
+    66% 0,
+    69% 6px,
+    72% 0,
+    75% 6px,
+    78% 0,
+    81% 6px,
+    84% 0,
+    87% 6px,
+    90% 0,
+    93% 6px,
+    96% 0,
+    100% 6px,
+    100% 100%,
+    0 100%
+  );
+  animation: receipt-print 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes receipt-print {
+  from {
+    transform: translateY(-110%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .receipt {
+    animation: none;
+  }
+}
+.receipt-head {
+  font: 800 20px/1.1 var(--font-display);
+  letter-spacing: 0;
+}
+.receipt-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+.receipt-tear {
+  border-top: 1.5px dashed var(--ink);
+  margin: 4px 0;
+}
+.receipt-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 4px 0;
+}
+.receipt-rp {
+  font: 700 28px/1 var(--font-mono);
+}
+.stamp {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  border: 2px double var(--ink);
+  display: grid;
+  place-items: center;
+  font: 700 11px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  transform: rotate(-8deg);
+  opacity: 0.85;
+  animation: stamp-in 120ms ease-out both;
+}
+.stamp--win {
+  border-color: var(--success);
+  color: var(--success);
+}
+.stamp--lose {
+  border-color: var(--ink-dim);
+  color: var(--ink-dim);
+}
+@keyframes stamp-in {
+  from {
+    transform: rotate(-8deg) scale(1.3);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(-8deg) scale(1);
+    opacity: 0.85;
+  }
+}
+.btn--wide {
+  width: 100%;
+  margin-top: 6px;
+}
