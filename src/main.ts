@@ -8,6 +8,10 @@ import type { Stance } from './sim/types';
 import { fnv1a32 } from './sim/rng';
 import type { DuelSetup } from './sim/types';
 import { chip } from './ui/components/chip';
+import { showCurtain } from './ui/screens/curtain';
+import { createPerfGovernor } from './render/perf';
+import { createStats } from './render/stats';
+import { webglSupported } from './render/renderer';
 
 const canvas = document.getElementById('gl');
 const app = document.getElementById('app');
@@ -59,6 +63,38 @@ const makeSetup = (): DuelSetup => {
   };
 };
 
+// nothing ever renders a black canvas (QA.md C2)
+let curtainOff: (() => void) | null = null;
+const curtain = (line: string, detail: string | null, retry: (() => void) | null): void => {
+  curtainOff?.();
+  curtainOff = showCurtain(app, line, detail, retry);
+};
+window.addEventListener('error', (e) => {
+  curtain('No steam.', e.message.slice(0, 120), () => {
+    window.location.reload();
+  });
+});
+window.addEventListener('unhandledrejection', () => {
+  curtain('No steam.', 'Something did not brew.', () => {
+    window.location.reload();
+  });
+});
+if (!webglSupported()) {
+  curtain('No steam.', 'This browser cannot draw the valley. Try Chrome or Safari.', null);
+  throw new Error('boot: no WebGL');
+}
+canvas.addEventListener('webglcontextlost', () => {
+  curtain('Steam everywhere.', 'The picture will be back in a moment.', null);
+});
+canvas.addEventListener('webglcontextrestored', () => {
+  window.location.reload();
+});
+
+const params = new URLSearchParams(window.location.search);
+const perfMode =
+  params.get('perf') === 'low' ? 'low' : params.get('perf') === 'high' ? 'high' : 'auto';
+const wantStats = params.get('stats') === '1';
+
 let duel: DuelController | null = null;
 const start = (): void => {
   duel?.dispose();
@@ -79,6 +115,18 @@ const start = (): void => {
 };
 start();
 
+const isMobile = matchMedia('(pointer: coarse)').matches;
+let governor: ReturnType<typeof createPerfGovernor> | null = null;
+let stats: ReturnType<typeof createStats> | null = null;
 startClock((f) => {
   duel?.frame(f);
+  const r = duel?.renderer;
+  if (r !== undefined) {
+    governor ??= createPerfGovernor(r, isMobile, perfMode);
+    governor.frame(f.emaMs);
+    if (wantStats) {
+      stats ??= createStats(document.body, r);
+      stats.frame(f.dt * 1000, { level: governor.level, dpr: r.getPixelRatio() });
+    }
+  }
 });

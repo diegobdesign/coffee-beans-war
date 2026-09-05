@@ -10,6 +10,7 @@ import {
 } from 'three';
 import { createTree } from '../../assets/tree';
 import { flood as floodMat, opaque, paint } from '../materials';
+import { mergeByMaterial } from '../merge';
 import { TOKENS } from '../tokens';
 import { SAMPLE_SPACING, type Stage } from '../../sim/terrain';
 import { STAGE_WIDTH } from '../../sim/rules';
@@ -162,5 +163,15 @@ export function buildStage(setup: DuelSetup, stage: Stage): Group {
   g.add(edge.clone());
   edge.position.x = 0;
   g.add(edge);
-  return g;
+
+  // one draw call for every opaque part of the stage, one for the water (ARCHITECTURE §2.3)
+  const out = new Group();
+  const merged = mergeByMaterial(g, opaque);
+  if (merged !== null) out.add(merged);
+  const water = mergeByMaterial(g, floodMat);
+  if (water !== null) {
+    water.castShadow = false;
+    out.add(water);
+  }
+  return out;
 }
