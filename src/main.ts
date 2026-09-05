@@ -29,6 +29,7 @@ const start = (): void => {
   app.replaceChildren();
   duel = createDuel(canvas, app, makeSetup(), {
     opponentName: 'DECAF DAN',
+    firstDuel: duelNo === 0,
     roast: [TOKENS.roast.light, TOKENS.roast.green],
     accent: [0xe8b86d, 0x7fa7c4],
     onOneMoreGo() {

@@ -308,3 +308,70 @@ body {
     padding-right: max(12px, env(safe-area-inset-right));
   }
 }
+
+/* slice 5: the Spotter stack */
+.spotter-stack {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+.spotter {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+.spotter-rim {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 200px var(--sky-zenith);
+  border: 3px solid var(--ink);
+  background: transparent;
+}
+.spotter-rim::after {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 4px solid var(--paper);
+  box-shadow: 2px 2px 0 var(--ink);
+  pointer-events: none;
+}
+.spotter {
+  clip-path: inset(-8px round 50%);
+}
+.spotter-stack .cup {
+  flex: none;
+}
+.chip--call {
+  align-self: flex-start;
+}
+@media (orientation: landscape) {
+  .spotter-stack {
+    top: max(24px, env(safe-area-inset-top));
+    right: max(24px, env(safe-area-inset-right));
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas: 'cup win' 'call call';
+    column-gap: 16px;
+    row-gap: 8px;
+    align-items: end;
+  }
+  .spotter-stack .spotter {
+    grid-area: win;
+    width: 112px;
+    height: 112px;
+  }
+  .spotter-stack .cup {
+    grid-area: cup;
+  }
+  .spotter-stack .chip--call {
+    grid-area: call;
+    justify-self: end;
+  }
+}
