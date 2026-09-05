@@ -1,0 +1,7 @@
+dist
+node_modules
+docs
+public
+package-lock.json
+src/sim/trig.table.ts
+test/golden/vectors.json
