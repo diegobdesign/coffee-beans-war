@@ -55,6 +55,8 @@ See GAME-DESIGN §16 and §16b. Headlines: bot RP capped at 100/day; stances fro
 
 **Stubbed:** world map (result card offers a re-challenge card), leaderboard, inbox, Supabase (package not installed).
 
+**M0 build status (2026-09-05, evening):** slices 1 to 7 merged (PRs #1 to #7). A stranger can open the production URL and play full duels against the 12-bot roster with the Spotter, receipts and RP. Slice 8 (playtest round 1 on real phones + M0 sign-off against QA.md §1) needs Diego's phone. Perf baseline: `docs/qa/perf-baseline.md`.
+
 **Live (from 2026-09-05 14:31):** https://coffee-beans-war.vercel.app · repo https://github.com/diegobdesign/coffee-beans-war · Vercel project `coffee-beans-war` (team Diego's projects). Slice 1 merged as PR #1.
 
 **Process:** public repo `diegobdesign/coffee-beans-war`, `main` protected by the `protect-main` ruleset (PR + green `check` required, no deletes, no force-push), feature branches, PR per slice with the preview URL, tsc before every commit, Vercel deploy on the first commit that renders anything. Order of slices: 1 scaffold + CI + deploy, 2 sim + goldens, 3 duel scene rendering a static stage, 4 gesture + shot playback, 5 Spotter + fog + calls, 6 bot + KO + receipt + One more go, 7 perf pass on device, 8 playtest round 1.
