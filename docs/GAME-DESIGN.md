@@ -255,3 +255,11 @@ Team duels, more maps, destructible terrain (tempting; M5 if we're early), items
 | 5 | Fairest matchup for a new player's first two "One more go" picks | **Yes.** First two picks choose a Green bot in the same or a lower stance than the player. From the third pick, nearest bot, then inbox order. |
 
 **All 14 deviations in UX.md §11 accepted.** Notably: you are always on the left; hint tags become `Drag to aim.` / `Tap any bean to challenge.` / `They are in the steam.`; the hit flash is rate-limited to one per 400ms per bean (strobe safety); colour-only signals get a shape (class dot), hatching (gauge danger zone), a dashed rim + 6° tilt (low cup), and a `Hit` stamp (inbox bar); "challenge declined" is cut; HANDOFF (`Sent.`), PAUSE and TOO SMALL join the screens inventory; the limbs get a functional aim pose. Lola re-skins these in ART-DIRECTION at the next pass.
+
+---
+
+## 17. Playtest findings ledger
+
+| Date | Source | Finding | Knob | Status |
+|---|---|---|---|---|
+| 2026-09-05 | automated production run (fixed 38°, power bracketing in 5% steps) | 9 of 12 shots called `Close.` but only 3 were direct hits; the duel took 12 shots. The Arabica `Close.` radius (3.0) is six bean radii wide, so `Close.` is not yet "you are on them". First-duel promise (≤ 4 shots vs a Green bot, §14) not met by naive bracketing. | `CLOSE_RADIUS_ARABICA`, `CLOSE_RADIUS`, or give green bean a small splash radius (0.6) so a Close. landing chips the cup | open, decide after playtest round 1 with humans (Allison §4.5e: raise the reveal, not the damage) |
