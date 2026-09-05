@@ -1,0 +1,850 @@
+<meta charset="utf-8">
+<title>Coffee Beans War Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Space+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --paper:#FBF6EC; --ink:#1B120E; --ink-dim:#6B5A4E; --accent:#E8A33C; --danger:#B3261E; --success:#3F7A40;
+  --sky-zenith:#F3EEE4; --sky-horizon:#E7D3B4; --rock:#59566B; --rock-lit:#7F7B95; --soil:#8E3B26;
+  --canopy-light:#7DB35F; --canopy-dark:#3F7A40; --trunk:#5A3A2A; --cherry:#C7382E; --flood:#2E1A12; --flood-glint:#4A2B1B; --crema:#C8925A;
+  --arabica:#C7382E; --robusta:#E0A72A; --liberica:#7D3C5E;
+  --roast-green:#8F9E6B; --roast-light:#C69C6D; --roast-medium:#8C5A2B; --roast-dark:#4A2A18; --roast-burnt:#201410;
+  --ammo-dark:#3A2115; --ammo-ground:#5C3A22; --chrome:#C9C6C0; --burlap:#B99A6A;
+  --display:"Bricolage Grotesque","Archivo Black","Arial Black",Helvetica,Arial,sans-serif;
+  --mono:"Space Mono","Courier New",Courier,ui-monospace,monospace;
+  --serrated:polygon(0% 0, 4% 6px, 8% 0, 12% 6px, 16% 0, 20% 6px, 24% 0, 28% 6px, 32% 0, 36% 6px, 40% 0, 44% 6px, 48% 0, 52% 6px, 56% 0, 60% 6px, 64% 0, 68% 6px, 72% 0, 76% 6px, 80% 0, 84% 6px, 88% 0, 92% 6px, 96% 0, 100% 6px, 100% 100%, 96% calc(100% - 6px), 92% 100%, 88% calc(100% - 6px), 84% 100%, 80% calc(100% - 6px), 76% 100%, 72% calc(100% - 6px), 68% 100%, 64% calc(100% - 6px), 60% 100%, 56% calc(100% - 6px), 52% 100%, 48% calc(100% - 6px), 44% 100%, 40% calc(100% - 6px), 36% 100%, 32% calc(100% - 6px), 28% 100%, 24% calc(100% - 6px), 20% 100%, 16% calc(100% - 6px), 12% 100%, 8% calc(100% - 6px), 4% 100%, 0% calc(100% - 6px));
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--mono);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.page{max-width:960px;margin:0 auto;padding:32px 16px 96px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-0.01em}
+h1{font-size:clamp(34px,7vw,64px);font-weight:800}
+h2{font-size:clamp(24px,4vw,32px);font-weight:800}
+h3{font-size:18px;font-weight:700;margin:24px 0 8px}
+p{max-width:64ch;margin:0 0 12px}
+section{padding:40px 0;border-top:1.5px solid var(--ink)}
+.eyebrow{font:700 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:8px}
+.lede{font-size:16px}
+.muted{color:var(--ink-dim)}
+.small{font-size:12px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid rgba(27,18,14,.18);vertical-align:top}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);font-weight:700}
+td.num{text-align:right;white-space:nowrap}
+/* swatches */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+.sw{border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;background:var(--paper)}
+.sw i{display:block;height:56px}
+.sw b{display:block;font-size:11px;padding:6px 8px 0;letter-spacing:.04em}
+.sw span{display:block;font-size:11px;color:var(--ink-dim);padding:0 8px 6px}
+.ramp{display:grid;grid-template-columns:repeat(5,1fr);border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
+.ramp div{height:64px;display:flex;align-items:flex-end;padding:6px;font-size:11px;font-weight:700;letter-spacing:.06em}
+.ramp .lt{color:var(--ink)} .ramp .dk{color:var(--paper)}
+/* chips, buttons, stamps */
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:1.5px solid var(--ink);border-radius:4px;background:var(--paper);color:var(--ink);font:700 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.chip.on{background:var(--ink);color:var(--paper)}
+.chip.dim{border-color:var(--ink-dim);color:var(--ink-dim)}
+.chip .dot{width:8px;height:8px;border-radius:999px;display:inline-block}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 20px;border-radius:4px;font:700 14px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:2px 2px 0 var(--ink);border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);transition:transform 120ms cubic-bezier(.2,.8,.2,1),box-shadow 120ms;user-select:none}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.danger{border-color:var(--danger);color:var(--danger);box-shadow:2px 2px 0 var(--danger)}
+.btn:active,.btn.pressed{transform:translate(2px,2px);box-shadow:none}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.wide{width:100%}
+.stamp{display:inline-flex;align-items:center;justify-content:center;width:96px;height:96px;border-radius:999px;border:2px double var(--ink);box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 4.5px var(--ink);font:700 13px/1.1 var(--mono);letter-spacing:.08em;text-transform:uppercase;text-align:center;transform:rotate(-8deg);opacity:.85;padding:10px}
+.stamp.ok{border-color:var(--success);color:var(--success);box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 4.5px var(--success)}
+.stamp.dim{border-color:var(--ink-dim);color:var(--ink-dim);box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 4.5px var(--ink-dim)}
+.stamp.sm{width:56px;height:56px;font-size:16px}
+/* receipt */
+.receipt{background:var(--paper);border:1.5px solid var(--ink);padding:22px 18px;clip-path:var(--serrated);position:relative;font-size:14px;max-width:380px}
+.receipt.wide{max-width:none}
+.receipt .line{display:flex;justify-content:space-between;gap:12px;padding:3px 0}
+.receipt .line span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.receipt .tear{border-top:1.5px dashed var(--ink);margin:12px 0}
+.receipt .title{font:800 20px/1.1 var(--display);margin-bottom:8px}
+.receipt .big{font:800 40px/1 var(--display);margin:8px 0}
+.bar{font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.actions{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.link{font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;text-align:center}
+/* map label */
+.maplabel{display:inline-flex;align-items:flex-end;gap:6px;font:400 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);-webkit-text-stroke:2px var(--paper);paint-order:stroke fill;text-shadow:1px 0 var(--paper),-1px 0 var(--paper),0 1px var(--paper),0 -1px var(--paper)}
+.maplabel .nm{border-bottom:2px solid var(--cherry);padding-bottom:2px}
+.maplabel .steam{letter-spacing:0;line-height:.9}
+.maplabel .bot{color:var(--ink-dim);font-size:10px}
+.mapbg{background:linear-gradient(90deg,var(--canopy-light) 0 45%,var(--rock-lit) 45% 70%,var(--flood) 70%);padding:18px;border-radius:4px;display:flex;gap:28px;flex-wrap:wrap;align-items:center}
+/* inbox row */
+.inrow{display:grid;grid-template-columns:48px 1fr auto auto 12px;gap:12px;align-items:center;height:64px;padding:0 12px;border:1.5px solid var(--ink);border-radius:4px;background:var(--paper);position:relative;overflow:hidden;max-width:560px}
+.inrow.hit::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.inrow .nm{font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.inrow .st{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim)}
+.inrow.cold{border-color:var(--ink-dim);color:var(--ink-dim)}
+.inrow.cold .nm{color:var(--ink-dim)}
+.inrow.cold::after{content:"COLD";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-12deg);font:700 22px/1 var(--mono);letter-spacing:.2em;color:var(--ink-dim);border:2px double var(--ink-dim);padding:4px 10px;opacity:.85}
+.cups{display:flex;gap:4px}
+.stub{display:inline-flex;flex-direction:column;align-items:center;gap:6px;padding:10px 14px 12px;border:1.5px solid var(--ink);background:var(--paper);clip-path:var(--serrated);font:400 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+/* misc */
+.demo{padding:20px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper)}
+.turnstrip{display:inline-flex;gap:10px;align-items:center;padding:6px 12px;border:1.5px solid var(--ink);background:var(--paper);font:700 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.turnstrip .who{font-weight:400;color:var(--ink-dim)}
+.house{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);line-height:1.15;display:flex;flex-wrap:wrap;gap:8px 32px}
+.spec{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:baseline;border-bottom:1px solid rgba(27,18,14,.18);padding:10px 0}
+.spec .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
+.picker{display:flex;gap:10px;justify-content:space-between}
+.picker .pk{flex:1;text-align:center;border:1.5px solid var(--ink);border-radius:8px;padding:8px 4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.picker .pk.on{background:var(--ink);color:var(--paper)}
+.swrow{display:flex;gap:8px;flex-wrap:wrap}
+.swrow i{width:24px;height:24px;border-radius:999px;display:inline-block;border:1.5px solid transparent}
+.swrow i.on{border-color:var(--ink);box-shadow:inset 0 0 0 2px var(--paper)}
+.caret::after{content:"";display:inline-block;width:9px;height:16px;background:var(--ink);vertical-align:-3px;margin-left:2px}
+.gone{background:var(--paper);color:var(--ink-dim)}
+@keyframes stampin{0%{transform:rotate(-8deg) scale(1.3);opacity:0}100%{transform:rotate(-8deg) scale(1);opacity:.85}}
+.stamp.in{animation:stampin 120ms cubic-bezier(.2,.8,.2,1) both}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}.stamp.in{animation:none}}
+.note{font-size:12px;color:var(--ink-dim);max-width:64ch}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px}
+.kv b{letter-spacing:.06em;text-transform:uppercase;font-size:11px;color:var(--ink-dim);padding-top:2px}
+.figcap{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px}
+svg{display:block;max-width:100%;height:auto}
+.spotter{width:112px;height:112px;border-radius:999px;border:1.5px solid var(--ink);padding:6px;background:var(--paper);box-shadow:2px 2px 0 var(--ink);flex:none}
+.spotter .lens{width:100%;height:100%;border-radius:999px;border:3px solid var(--crema);overflow:hidden;background:var(--sky-horizon)}
+.spotter svg{width:100%;height:100%;display:block}
+.chip.call{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:0;text-transform:none}
+.beangrid{display:grid;grid-template-columns:64px repeat(5,minmax(40px,1fr));gap:6px;align-items:center}
+.beangrid svg{width:100%;max-width:64px;margin:0 auto}
+.faces svg{width:44px}
+.beangrid .rl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim)}
+.beangrid .hd{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);text-align:center}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Bean bodies, drawn in a 64x80 box, fill = currentColor, crease darkens -->
+    <symbol id="b-arabica" viewBox="0 0 64 80"><g transform="rotate(8 32 40)"><ellipse cx="32" cy="40" rx="20" ry="32" fill="currentColor"/><path d="M32 12 C 24 26, 40 34, 32 48 C 26 58, 34 64, 32 68" fill="none" stroke="rgba(0,0,0,.38)" stroke-width="3" stroke-linecap="round"/></g></symbol>
+    <symbol id="b-robusta" viewBox="0 0 64 80"><ellipse cx="32" cy="44" rx="28" ry="30" fill="currentColor"/><path d="M32 18 L32 70" fill="none" stroke="rgba(0,0,0,.30)" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="b-liberica" viewBox="0 0 64 80"><g transform="rotate(-15 32 40)"><path d="M30 6 C 16 8, 6 30, 12 52 C 18 72, 42 78, 52 62 C 60 48, 52 30, 44 20 C 40 14, 38 10, 30 6 Z" fill="currentColor"/><path d="M38 14 C 30 30, 36 44, 28 58 C 26 62, 26 66, 30 70" fill="none" stroke="rgba(0,0,0,.36)" stroke-width="3" stroke-linecap="round"/></g></symbol>
+    <!-- Faces (dot eyes, ink), placed in same box -->
+    <symbol id="f-deadpan" viewBox="0 0 64 80"><circle cx="24" cy="36" r="2.6" fill="#1B120E"/><circle cx="40" cy="36" r="2.6" fill="#1B120E"/><path d="M27 48 H37" stroke="#1B120E" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="f-squint" viewBox="0 0 64 80"><path d="M20 36 H28 M36 36 H44" stroke="#1B120E" stroke-width="2.6" stroke-linecap="round"/><path d="M27 48 H37" stroke="#1B120E" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="f-grin" viewBox="0 0 64 80"><circle cx="24" cy="36" r="2.6" fill="#1B120E"/><circle cx="40" cy="36" r="2.6" fill="#1B120E"/><path d="M25 46 Q32 53 39 46" fill="none" stroke="#1B120E" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="f-sleepy" viewBox="0 0 64 80"><path d="M20 38 Q24 41 28 38 M36 38 Q40 41 44 38" fill="none" stroke="#1B120E" stroke-width="2.4" stroke-linecap="round"/><path d="M29 49 H35" stroke="#1B120E" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="f-wide" viewBox="0 0 64 80"><circle cx="24" cy="36" r="4" fill="#1B120E"/><circle cx="40" cy="36" r="4" fill="#1B120E"/><path d="M29 49 H35" stroke="#1B120E" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="f-wink" viewBox="0 0 64 80"><circle cx="24" cy="36" r="2.6" fill="#1B120E"/><path d="M36 36 H44" stroke="#1B120E" stroke-width="2.6" stroke-linecap="round"/><path d="M27 48 H37" stroke="#1B120E" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <!-- HP cup: trapezoid with clip for fill -->
+    <symbol id="cup" viewBox="0 0 40 48"><path id="cupbody" d="M6 8 H34 L30 46 H10 Z"/></symbol>
+  </defs>
+</svg>
+
+<div class="page">
+
+<!-- 1. HEADER -->
+<header>
+  <div class="eyebrow">Design system · v0.1 · The Grounds</div>
+  <h1>Coffee Beans War</h1>
+  <p class="lede" style="margin-top:12px">A saturated low-poly diorama at first light, flat-shaded, no outlines, one warm key light, milk-white sky, a black lake of coffee steaming in the lowland. Tone: deadpan. Three decisions to react to: <b>deadpan with no exclamation marks anywhere in the game</b>; <b>the world is green, red and violet-grey and the beans are the only brown</b>; <b>the UI is thermal receipt paper and stamped bag labels</b>. Everything below is rendered with the real tokens, not described.</p>
+</header>
+
+<!-- 2. THE WORLD -->
+<section>
+  <div class="eyebrow">02 · The world</div>
+  <h2>One composition, learned once</h2>
+  <p>World camera: perspective, 30° FOV, pitch 52°, yaw fixed at 35°. Ridge top-right, Belt on the diagonal, Brew bottom-left, The Roaster at the centre. No rotation, ever.</p>
+  <div class="grid g2" style="align-items:start">
+    <div>
+      <svg viewBox="0 0 360 260" role="img" aria-label="Fixed world composition">
+        <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3EEE4"/><stop offset="1" stop-color="#E7D3B4"/></linearGradient></defs>
+        <rect width="360" height="260" fill="url(#sky)"/>
+        <!-- ground plane, tilted diorama -->
+        <polygon points="40,235 320,235 340,90 60,90" fill="#8E3B26"/>
+        <!-- flood bottom-left -->
+        <polygon points="46,232 150,232 128,168 60,168" fill="#2E1A12"/>
+        <polyline points="60,168 128,168 150,232" fill="none" stroke="#C8925A" stroke-width="2"/>
+        <path d="M70 200 q6 -4 12 0 t12 0" stroke="#4A2B1B" fill="none" stroke-width="1.5"/>
+        <!-- steam wisps -->
+        <g fill="#FFFFFF" opacity=".75"><circle cx="96" cy="160" r="6"/><circle cx="110" cy="146" r="5"/><circle cx="122" cy="134" r="4"/></g>
+        <!-- tree belt diagonal -->
+        <g>
+          <g transform="translate(140,190)"><rect x="-2" y="0" width="4" height="12" fill="#5A3A2A"/><polygon points="-12,4 12,4 0,-14" fill="#3F7A40"/><polygon points="-9,-6 9,-6 0,-20" fill="#7DB35F"/><circle cx="-5" cy="-4" r="1.6" fill="#C7382E"/><circle cx="6" cy="-9" r="1.6" fill="#C7382E"/></g>
+          <g transform="translate(175,168)"><rect x="-2" y="0" width="4" height="12" fill="#5A3A2A"/><polygon points="-12,4 12,4 0,-14" fill="#3F7A40"/><polygon points="-9,-6 9,-6 0,-20" fill="#7DB35F"/><circle cx="4" cy="-5" r="1.6" fill="#C7382E"/></g>
+          <g transform="translate(205,146)"><rect x="-2" y="0" width="4" height="12" fill="#5A3A2A"/><polygon points="-12,4 12,4 0,-14" fill="#3F7A40"/><polygon points="-9,-6 9,-6 0,-20" fill="#7DB35F"/><circle cx="-4" cy="-8" r="1.6" fill="#C7382E"/></g>
+          <g transform="translate(240,126)"><rect x="-2" y="0" width="4" height="12" fill="#5A3A2A"/><polygon points="-12,4 12,4 0,-14" fill="#3F7A40"/><polygon points="-9,-6 9,-6 0,-20" fill="#7DB35F"/><circle cx="5" cy="-6" r="1.6" fill="#C7382E"/></g>
+          <g transform="translate(160,214)"><rect x="-2" y="0" width="4" height="12" fill="#5A3A2A"/><polygon points="-12,4 12,4 0,-14" fill="#3F7A40"/><polygon points="-9,-6 9,-6 0,-20" fill="#7DB35F"/></g>
+        </g>
+        <!-- ridge top-right, 3 terraces -->
+        <polygon points="230,110 330,110 322,88 244,88" fill="#59566B"/>
+        <polygon points="230,110 244,88 280,88 268,110" fill="#7F7B95"/>
+        <polygon points="250,88 320,88 312,70 262,70" fill="#59566B"/>
+        <polygon points="250,88 262,70 292,70 282,88" fill="#7F7B95"/>
+        <polygon points="270,70 308,70 300,54 280,54" fill="#59566B"/>
+        <polygon points="270,70 280,54 292,54 284,70" fill="#7F7B95"/>
+        <!-- The Roaster centre -->
+        <g transform="translate(190,150)"><rect x="-8" y="-14" width="16" height="16" fill="#C9C6C0"/><rect x="-10" y="-16" width="20" height="4" fill="#1B120E"/><rect x="-6" y="2" width="12" height="4" fill="#1B120E"/><circle cx="0" cy="-24" r="3" fill="#FFFFFF" opacity=".8"/></g>
+        <!-- sacks -->
+        <g fill="#B99A6A"><ellipse cx="110" cy="112" rx="6" ry="5"/><ellipse cx="122" cy="116" rx="6" ry="5"/></g>
+        <!-- beans on slots -->
+        <g><circle cx="288" cy="80" r="6" fill="#4A2A18"/><circle cx="286" cy="78" r="1" fill="#1B120E"/><circle cx="290" cy="78" r="1" fill="#1B120E"/></g>
+        <g><circle cx="90" cy="214" r="6" fill="#8F9E6B"/><circle cx="88" cy="212" r="1" fill="#1B120E"/><circle cx="92" cy="212" r="1" fill="#1B120E"/></g>
+        <g><circle cx="222" cy="158" r="6" fill="#C69C6D"/><circle cx="220" cy="156" r="1" fill="#1B120E"/><circle cx="224" cy="156" r="1" fill="#1B120E"/></g>
+        <!-- labels -->
+        <g font-family="Space Mono, monospace" font-size="9" fill="#1B120E" letter-spacing="1">
+          <text x="252" y="48">THE RIDGE +3</text><text x="150" y="250">THE BREW 0</text><text x="176" y="112">THE BELT +1.5</text><text x="150" y="128">ROASTER</text>
+        </g>
+      </svg>
+      <div class="figcap">World composition, tokens as rendered</div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <svg viewBox="0 0 200 112" role="img" aria-label="Duel framing landscape">
+          <rect width="200" height="112" fill="#F3EEE4"/>
+          <rect x="0" y="0" width="200" height="40" fill="#E7D3B4" opacity=".55"/>
+          <polygon points="0,60 60,52 120,58 200,48 200,86 0,86" fill="#59566B" opacity=".35"/>
+          <polygon points="0,86 200,86 200,112 0,112" fill="#8E3B26"/>
+          <line x1="0" y1="86" x2="200" y2="86" stroke="#1B120E" stroke-width="1.5"/>
+          <path d="M28 82 Q100 12 172 82" fill="none" stroke="#1B120E" stroke-width="1.2" stroke-dasharray="2 3"/>
+          <circle cx="28" cy="80" r="6" fill="#8C5A2B"/><circle cx="172" cy="80" r="6" fill="#4A2A18"/>
+          <defs><mask id="fogL"><rect x="100" y="0" width="100" height="86" fill="#fff"/><circle cx="150" cy="84" r="11" fill="#000"/></mask></defs>
+          <rect x="100" y="0" width="100" height="86" fill="#E7D3B4" opacity=".8" mask="url(#fogL)"/>
+          <g fill="#FFFFFF" opacity=".9"><circle cx="112" cy="70" r="6"/><circle cx="128" cy="56" r="7"/><circle cx="146" cy="44" r="6"/><circle cx="166" cy="60" r="7"/><circle cx="184" cy="72" r="6"/><circle cx="188" cy="40" r="5"/><circle cx="120" cy="30" r="5"/></g>
+          <g stroke="#1B120E" fill="none" stroke-width="1"><circle cx="150" cy="84" r="4"/><circle cx="150" cy="84" r="2"/></g>
+          <circle cx="182" cy="16" r="11" fill="#FBF6EC" stroke="#1B120E" stroke-width="1.2"/><circle cx="182" cy="16" r="8" fill="#E7D3B4" stroke="#C8925A" stroke-width="1.5"/><circle cx="182" cy="17" r="2.5" fill="#4A2A18"/>
+          <rect x="164" y="30" width="36" height="8" fill="#FBF6EC" stroke="#1B120E" stroke-width="1"/>
+          <rect x="4" y="4" width="18" height="12" fill="none" stroke="#1B120E" stroke-width="1"/>
+          <rect x="150" y="4" width="18" height="12" fill="none" stroke="#1B120E" stroke-width="1"/>
+          <rect x="72" y="96" width="56" height="10" fill="#FBF6EC" stroke="#1B120E" stroke-width="1"/>
+          <rect x="120" y="88" width="30" height="7" fill="#FBF6EC" stroke="#1B120E" stroke-width="1"/>
+          <g font-family="Space Mono, monospace" font-size="6" fill="#1B120E"><text x="30" y="14">far band 85% fog</text><text x="30" y="47">mid band 55%</text><text x="4" y="93">ground 22%</text><text x="94" y="104">HUD</text><text x="122" y="94">BREW 0</text><text x="167" y="36">Close.</text><text x="104" y="10">fog half</text></g>
+        </svg>
+        <div class="figcap">Landscape · opponent half in steam · Spotter top corner · marker thins fog</div>
+      </div>
+      <div>
+        <svg viewBox="0 0 112 200" role="img" aria-label="Duel framing portrait">
+          <rect width="112" height="200" fill="#F3EEE4"/>
+          <rect x="0" y="0" width="112" height="40" fill="#E7D3B4" opacity=".55"/>
+          <polygon points="0,84 34,78 70,82 112,74 112,116 0,116" fill="#59566B" opacity=".35"/>
+          <polygon points="0,116 112,116 112,200 0,200" fill="#8E3B26"/>
+          <line x1="0" y1="116" x2="112" y2="116" stroke="#1B120E" stroke-width="1.5"/>
+          <path d="M16 112 Q56 50 96 112" fill="none" stroke="#1B120E" stroke-width="1.2" stroke-dasharray="2 3"/>
+          <circle cx="16" cy="110" r="5" fill="#8C5A2B"/><circle cx="96" cy="110" r="5" fill="#4A2A18"/>
+          <defs><mask id="fogP"><rect x="56" y="0" width="56" height="116" fill="#fff"/><circle cx="84" cy="114" r="9" fill="#000"/></mask></defs>
+          <rect x="56" y="0" width="56" height="116" fill="#E7D3B4" opacity=".8" mask="url(#fogP)"/>
+          <g fill="#FFFFFF" opacity=".9"><circle cx="64" cy="100" r="5"/><circle cx="76" cy="84" r="6"/><circle cx="92" cy="72" r="5"/><circle cx="104" cy="92" r="6"/><circle cx="70" cy="60" r="4"/><circle cx="98" cy="50" r="5"/></g>
+          <g stroke="#1B120E" fill="none" stroke-width="1"><circle cx="84" cy="114" r="3.5"/><circle cx="84" cy="114" r="1.5"/></g>
+          <circle cx="94" cy="16" r="10" fill="#FBF6EC" stroke="#1B120E" stroke-width="1.2"/><circle cx="94" cy="16" r="7" fill="#E7D3B4" stroke="#C8925A" stroke-width="1.5"/><circle cx="94" cy="17" r="2.2" fill="#4A2A18"/>
+          <rect x="78" y="30" width="30" height="8" fill="#FBF6EC" stroke="#1B120E" stroke-width="1"/>
+          <rect x="4" y="130" width="104" height="66" fill="#FBF6EC" stroke="#1B120E" stroke-width="1"/>
+          <g font-family="Space Mono, monospace" font-size="6" fill="#1B120E"><text x="8" y="14">far band</text><text x="8" y="60">mid band</text><text x="4" y="126">ground 42%</text><text x="36" y="166">HUD 35%</text><text x="82" y="36">Wide.</text></g>
+        </svg>
+        <div class="figcap">Portrait · fog half right · HUD owns the lower 35%</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. COLOUR -->
+<section>
+  <div class="eyebrow">03 · Colour</div>
+  <h2>Green, red, violet-grey. Brown is for beans.</h2>
+  <h3>World</h3>
+  <div class="swatches">
+    <div class="sw"><i style="background:var(--sky-zenith)"></i><b>sky-zenith</b><span>#F3EEE4</span></div>
+    <div class="sw"><i style="background:var(--sky-horizon)"></i><b>sky-horizon</b><span>#E7D3B4 · fog</span></div>
+    <div class="sw"><i style="background:var(--rock)"></i><b>rock</b><span>#59566B</span></div>
+    <div class="sw"><i style="background:var(--rock-lit)"></i><b>rock-lit</b><span>#7F7B95</span></div>
+    <div class="sw"><i style="background:var(--soil)"></i><b>soil</b><span>#8E3B26</span></div>
+    <div class="sw"><i style="background:var(--canopy-light)"></i><b>canopy-light</b><span>#7DB35F</span></div>
+    <div class="sw"><i style="background:var(--canopy-dark)"></i><b>canopy-dark</b><span>#3F7A40 · success</span></div>
+    <div class="sw"><i style="background:var(--trunk)"></i><b>trunk</b><span>#5A3A2A</span></div>
+    <div class="sw"><i style="background:var(--cherry)"></i><b>cherry</b><span>#C7382E</span></div>
+    <div class="sw"><i style="background:var(--flood)"></i><b>flood</b><span>#2E1A12</span></div>
+    <div class="sw"><i style="background:var(--flood-glint)"></i><b>flood-glint</b><span>#4A2B1B</span></div>
+    <div class="sw"><i style="background:var(--crema)"></i><b>crema</b><span>#C8925A</span></div>
+    <div class="sw"><i style="background:#fff;box-shadow:inset 0 0 0 1px #D9D2C7"></i><b>steam</b><span>#FFFFFF 55% · shadow #D9D2C7</span></div>
+  </div>
+  <h3>Bean classes</h3>
+  <div class="swatches" style="max-width:360px">
+    <div class="sw"><i style="background:var(--arabica)"></i><b>arabica</b><span>#C7382E</span></div>
+    <div class="sw"><i style="background:var(--robusta)"></i><b>robusta</b><span>#E0A72A</span></div>
+    <div class="sw"><i style="background:var(--liberica)"></i><b>liberica</b><span>#7D3C5E · flat</span></div>
+  </div>
+  <h3>Roast ramp, the bean body. Earned, never chosen.</h3>
+  <div class="ramp">
+    <div class="lt" style="background:var(--roast-green)">GREEN #8F9E6B</div>
+    <div class="lt" style="background:var(--roast-light)">LIGHT #C69C6D</div>
+    <div class="dk" style="background:var(--roast-medium)">MEDIUM #8C5A2B</div>
+    <div class="dk" style="background:var(--roast-dark)">DARK #4A2A18</div>
+    <div class="dk" style="background:var(--roast-burnt)">BURNT #201410</div>
+  </div>
+  <h3>Ammo</h3>
+  <div class="swatches" style="max-width:480px">
+    <div class="sw"><i style="background:var(--roast-green)"></i><b>green bean</b><span>#8F9E6B</span></div>
+    <div class="sw"><i style="background:var(--ammo-dark)"></i><b>dark roast</b><span>#3A2115</span></div>
+    <div class="sw"><i style="background:var(--ammo-ground)"></i><b>ground coffee</b><span>#5C3A22</span></div>
+    <div class="sw"><i style="background:linear-gradient(180deg,#FBF6EC 0 35%,#C8925A 35% 45%,#2E1A12 45%)"></i><b>full cup</b><span>paper · crema · flood</span></div>
+  </div>
+  <h3>Player accent (8). Tag, cup rim, machine trim, trail. Never the body.</h3>
+  <div class="swatches">
+    <div class="sw"><i style="background:#E8B86D"></i><b>crema</b><span>#E8B86D</span></div>
+    <div class="sw"><i style="background:#D64541"></i><b>cherry</b><span>#D64541</span></div>
+    <div class="sw"><i style="background:#5FA65A"></i><b>leaf</b><span>#5FA65A</span></div>
+    <div class="sw"><i style="background:#F6F1E7;box-shadow:inset 0 0 0 1px #D9D2C7"></i><b>milk</b><span>#F6F1E7</span></div>
+    <div class="sw"><i style="background:#C77A2E"></i><b>caramel</b><span>#C77A2E</span></div>
+    <div class="sw"><i style="background:#1B120E"></i><b>ink</b><span>#1B120E</span></div>
+    <div class="sw"><i style="background:#7FA7C4"></i><b>porcelain</b><span>#7FA7C4</span></div>
+    <div class="sw"><i style="background:#D98A9E"></i><b>cascara</b><span>#D98A9E</span></div>
+  </div>
+  <h3>UI</h3>
+  <div class="swatches">
+    <div class="sw"><i style="background:var(--paper);box-shadow:inset 0 0 0 1px #D9D2C7"></i><b>paper</b><span>#FBF6EC · surface</span></div>
+    <div class="sw"><i style="background:var(--ink)"></i><b>ink</b><span>#1B120E · text, borders</span></div>
+    <div class="sw"><i style="background:var(--ink-dim)"></i><b>ink-dim</b><span>#6B5A4E</span></div>
+    <div class="sw"><i style="background:var(--accent)"></i><b>accent</b><span>#E8A33C · fills only</span></div>
+    <div class="sw"><i style="background:var(--danger)"></i><b>danger</b><span>#B3261E</span></div>
+    <div class="sw"><i style="background:var(--success)"></i><b>success</b><span>#3F7A40</span></div>
+  </div>
+  <h3>Contrast, computed (WCAG ratio; 4.5 text, 3.0 large and UI)</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Pair</th><th class="num">Ratio</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>ink on paper</td><td class="num">17.1</td><td>all text</td></tr>
+      <tr><td>ink-dim on paper</td><td class="num">6.1</td><td>secondary text</td></tr>
+      <tr><td>paper on ink</td><td class="num">17.1</td><td>primary button</td></tr>
+      <tr><td>paper on danger</td><td class="num">6.1</td><td>danger label</td></tr>
+      <tr><td>paper on success</td><td class="num">4.8</td><td>success stamp</td></tr>
+      <tr><td>ink on accent</td><td class="num">8.5</td><td>text on an accent fill</td></tr>
+      <tr><td>paper on accent</td><td class="num">2.0</td><td><b style="color:var(--danger)">fails</b>: accent is never a text colour, never a ground for paper text</td></tr>
+      <tr><td>ink on sky-zenith</td><td class="num">15.9</td><td>labels over sky</td></tr>
+      <tr><td>ink on canopy-light</td><td class="num">7.5</td><td>labels over canopy</td></tr>
+      <tr><td>paper on flood</td><td class="num">15.3</td><td>labels over the lake</td></tr>
+      <tr><td>paper on rock</td><td class="num">6.6</td><td>labels over the ridge</td></tr>
+      <tr><td>paper on arabica · ink on robusta · paper on liberica</td><td class="num">4.8 · 8.5 · 7.3</td><td>class chips</td></tr>
+      <tr><td>ink on roast-green · ink on roast-light</td><td class="num">6.4 · 7.4</td><td>roast badge, light stops</td></tr>
+      <tr><td>paper on roast-medium · dark · burnt</td><td class="num">5.4 · 11.9 · 16.7</td><td>roast badge, dark stops</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" style="margin-top:10px">Rule that makes this a guarantee: HUD text is never drawn raw on the world. Every string sits on a paper chip. Map labels are the one exception and carry a 2px paper stroke.</p>
+</section>
+
+<!-- 4. THE BEANS -->
+<section>
+  <div class="eyebrow">04 · The beans</div>
+  <h2>Class is silhouette. Roast is colour. Accent is the tag.</h2>
+  <p>Arabica: slim, S-crease, leans 8° forward. Robusta: near round, straight crease, squat. Liberica: lopsided teardrop with a hooked tip, leans 15° off its own axis. Faces are two ink dots and one line, no whites. Each column is one roast stop.</p>
+  <div class="scroll"><div class="beangrid">
+    <div></div><div class="hd">Green</div><div class="hd">Light</div><div class="hd">Medium</div><div class="hd">Dark</div><div class="hd">Burnt</div>
+    <div class="rl">Arabica</div>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-green)"><use href="#b-arabica"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-light)"><use href="#b-arabica"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-medium)"><use href="#b-arabica"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-dark)"><use href="#b-arabica"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-burnt)"><use href="#b-arabica"/><use href="#f-deadpan"/></svg>
+    <div class="rl">Robusta</div>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-green)"><use href="#b-robusta"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-light)"><use href="#b-robusta"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-medium)"><use href="#b-robusta"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-dark)"><use href="#b-robusta"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-burnt)"><use href="#b-robusta"/><use href="#f-deadpan"/></svg>
+    <div class="rl">Liberica</div>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-green)"><use href="#b-liberica"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-light)"><use href="#b-liberica"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-medium)"><use href="#b-liberica"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-dark)"><use href="#b-liberica"/><use href="#f-deadpan"/></svg>
+    <svg viewBox="0 0 64 80" width="64" style="color:var(--roast-burnt)"><use href="#b-liberica"/><use href="#f-deadpan"/></svg>
+  </div></div>
+
+  <h3>Six face sets (player picks one; each has 5 gameplay states)</h3>
+  <div class="row faces" style="gap:10px">
+    <div style="text-align:center"><svg viewBox="0 0 64 80" width="56" style="color:var(--roast-medium)"><use href="#b-arabica"/><use href="#f-deadpan"/></svg><div class="figcap">Deadpan</div></div>
+    <div style="text-align:center"><svg viewBox="0 0 64 80" width="56" style="color:var(--roast-medium)"><use href="#b-arabica"/><use href="#f-squint"/></svg><div class="figcap">Squint</div></div>
+    <div style="text-align:center"><svg viewBox="0 0 64 80" width="56" style="color:var(--roast-medium)"><use href="#b-arabica"/><use href="#f-grin"/></svg><div class="figcap">Grin</div></div>
+    <div style="text-align:center"><svg viewBox="0 0 64 80" width="56" style="color:var(--roast-medium)"><use href="#b-arabica"/><use href="#f-sleepy"/></svg><div class="figcap">Sleepy</div></div>
+    <div style="text-align:center"><svg viewBox="0 0 64 80" width="56" style="color:var(--roast-medium)"><use href="#b-arabica"/><use href="#f-wide"/></svg><div class="figcap">Wide</div></div>
+    <div style="text-align:center"><svg viewBox="0 0 64 80" width="56" style="color:var(--roast-medium)"><use href="#b-arabica"/><use href="#f-wink"/></svg><div class="figcap">Wink</div></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:24px">
+    <div>
+      <h3 style="margin-top:0">Origin badge: a luggage tag, no flags</h3>
+      <svg viewBox="0 0 120 70" width="180" role="img" aria-label="Luggage tag reading ETH">
+        <path d="M4 20 Q4 4 20 4 H110 Q116 4 116 10 V60 Q116 66 110 66 H20 Q4 66 4 50 Z" fill="#FBF6EC" stroke="#1B120E" stroke-width="2"/>
+        <circle cx="16" cy="35" r="4" fill="#FBF6EC" stroke="#1B120E" stroke-width="2"/>
+        <path d="M16 35 C 2 30, 0 12, 12 6" fill="none" stroke="#D64541" stroke-width="2.5" stroke-linecap="round"/>
+        <text x="66" y="44" text-anchor="middle" font-family="Space Mono, monospace" font-weight="700" font-size="24" letter-spacing="3" fill="#1B120E" transform="rotate(-4 66 40)">ETH</text>
+      </svg>
+      <div class="row" style="margin-top:8px"><span class="chip">COL</span><span class="chip">ETH</span><span class="chip">BRA</span><span class="chip">VNM</span><span class="chip">KEN</span><span class="chip">GTM</span><span class="chip">CRI</span><span class="chip">IDN</span></div>
+    </div>
+    <div>
+      <h3 style="margin-top:0">Six accessories (Light roast and up)</h3>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:8px">
+        <div style="text-align:center"><svg viewBox="0 0 48 48" width="48"><path d="M10 22 H38 L34 44 H14 Z" fill="#FBF6EC" stroke="#1B120E" stroke-width="2"/><rect x="8" y="16" width="32" height="6" rx="2" fill="#1B120E"/><line x1="16" y1="30" x2="32" y2="30" stroke="#D64541" stroke-width="2"/></svg><div class="figcap">Cup hat</div></div>
+        <div style="text-align:center"><svg viewBox="0 0 48 48" width="48"><path d="M6 20 Q24 10 42 20 L40 30 Q24 22 8 30 Z" fill="#B99A6A" stroke="#1B120E" stroke-width="2"/><path d="M30 28 L38 44 L28 42 Z" fill="#B99A6A" stroke="#1B120E" stroke-width="2"/><path d="M12 24 h6 M22 22 h6" stroke="#1B120E" stroke-width="1.5"/></svg><div class="figcap">Sack scarf</div></div>
+        <div style="text-align:center"><svg viewBox="0 0 48 48" width="48"><rect x="21" y="4" width="6" height="40" rx="3" fill="#5A3A2A" stroke="#1B120E" stroke-width="2"/></svg><div class="figcap">Stirrer staff</div></div>
+        <div style="text-align:center"><svg viewBox="0 0 48 48" width="48"><path d="M24 6 L6 44 H42 Z" fill="#FFFFFF" stroke="#1B120E" stroke-width="2"/><path d="M24 6 L18 44 M24 6 L30 44" stroke="#1B120E" stroke-width="1" opacity=".4"/></svg><div class="figcap">Filter cape</div></div>
+        <div style="text-align:center"><svg viewBox="0 0 48 48" width="48"><path d="M24 44 V22" stroke="#3F7A40" stroke-width="3"/><path d="M24 24 C 10 22, 8 6, 24 4 C 40 6, 38 22, 24 24 Z" fill="#7DB35F" stroke="#1B120E" stroke-width="2"/><path d="M24 22 V6" stroke="#3F7A40" stroke-width="1.5"/></svg><div class="figcap">Leaf sprout</div></div>
+        <div style="text-align:center"><svg viewBox="0 0 48 48" width="48"><rect x="8" y="26" width="32" height="12" rx="2" fill="#C9C6C0" stroke="#1B120E" stroke-width="2"/><rect x="18" y="8" width="12" height="18" rx="3" fill="#1B120E"/><line x1="12" y1="32" x2="36" y2="32" stroke="#D64541" stroke-width="2"/></svg><div class="figcap">Tamper helmet</div></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Reading at 40px and 400px. Same mesh, only scaled.</h3>
+  <div class="row" style="align-items:flex-end;gap:32px">
+    <div style="text-align:center">
+      <svg viewBox="0 0 64 80" width="32" height="40" style="color:var(--roast-dark)"><use href="#b-liberica"/><use href="#f-squint"/><path d="M6 44 h10 v12 h-10 z" fill="#FBF6EC" stroke="#1B120E" stroke-width="1"/><path d="M11 44 v-6" stroke="#D64541" stroke-width="2"/></svg>
+      <div class="figcap">40px: class, roast, accent</div>
+    </div>
+    <div style="text-align:center">
+      <svg viewBox="0 0 64 80" width="320" height="400" style="color:var(--roast-dark)"><path d="M34 10 L22 62 H62 Z" fill="#FFFFFF" stroke="#1B120E" stroke-width="1" opacity=".95"/><use href="#b-liberica"/><use href="#f-squint"/><path d="M4 44 h12 v14 h-12 z" fill="#FBF6EC" stroke="#1B120E" stroke-width="1"/><text x="10" y="53" font-family="Space Mono, monospace" font-size="5" font-weight="700" text-anchor="middle" fill="#1B120E">VNM</text><path d="M10 44 v-6" stroke="#D64541" stroke-width="1.5"/></svg>
+      <div class="figcap">400px: face state, crease, tag code, cape</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. MACHINES -->
+<section>
+  <div class="eyebrow">05 · The machines</div>
+  <h2>Coffee kit, ink enamel, accent trim</h2>
+  <div class="grid g4">
+    <div class="demo" style="text-align:center">
+      <svg viewBox="0 0 100 100" width="110" style="margin:0 auto" role="img" aria-label="Moka pot mortar">
+        <g transform="rotate(-25 50 60)">
+          <polygon points="38,92 62,92 68,60 32,60" fill="#1B120E"/>
+          <polygon points="34,60 66,60 60,34 40,34" fill="#C9C6C0"/>
+          <rect x="30" y="56" width="40" height="6" fill="#D64541"/>
+          <path d="M40 34 L42 26 H58 L60 34" fill="#1B120E"/>
+          <path d="M56 26 L68 18" stroke="#1B120E" stroke-width="4" stroke-linecap="round"/>
+          <path d="M66 42 L76 46 L74 56" fill="none" stroke="#1B120E" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <g fill="#FFFFFF" opacity=".8"><circle cx="76" cy="18" r="4"/><circle cx="82" cy="10" r="3"/></g>
+      </svg>
+      <div class="chip" style="margin-top:8px">Moka pot mortar</div>
+      <div class="figcap">Default: Robusta · high lob</div>
+    </div>
+    <div class="demo" style="text-align:center">
+      <svg viewBox="0 0 100 100" width="110" style="margin:0 auto" role="img" aria-label="French press cannon">
+        <g transform="rotate(-20 50 60)">
+          <rect x="18" y="46" width="56" height="28" rx="4" fill="#FBF6EC" fill-opacity=".5" stroke="#1B120E" stroke-width="2.5"/>
+          <rect x="14" y="44" width="8" height="32" fill="#1B120E"/>
+          <rect x="74" y="50" width="10" height="20" fill="#1B120E"/>
+          <rect x="0" y="57" width="16" height="6" fill="#C9C6C0"/>
+          <circle cx="2" cy="60" r="5" fill="#1B120E"/>
+          <rect x="34" y="46" width="4" height="28" fill="#C9C6C0"/>
+          <line x1="18" y1="72" x2="74" y2="72" stroke="#D64541" stroke-width="3"/>
+        </g>
+        <rect x="42" y="80" width="16" height="10" fill="#5A3A2A"/>
+      </svg>
+      <div class="chip" style="margin-top:8px">French press cannon</div>
+      <div class="figcap">Default: Liberica · plunger charge</div>
+    </div>
+    <div class="demo" style="text-align:center">
+      <svg viewBox="0 0 100 100" width="110" style="margin:0 auto" role="img" aria-label="Espresso machine">
+        <rect x="22" y="30" width="56" height="50" rx="3" fill="#1B120E"/>
+        <rect x="22" y="24" width="56" height="8" fill="#C9C6C0"/>
+        <rect x="26" y="80" width="48" height="8" fill="#C9C6C0"/>
+        <circle cx="50" cy="50" r="12" fill="#FBF6EC" stroke="#C9C6C0" stroke-width="2"/>
+        <path d="M42 42 A11 11 0 0 1 58 42" fill="none" stroke="#B3261E" stroke-width="3"/>
+        <line x1="50" y1="50" x2="57" y2="42" stroke="#1B120E" stroke-width="2" stroke-linecap="round"/>
+        <rect x="70" y="60" width="26" height="12" rx="2" fill="#C9C6C0"/>
+        <rect x="90" y="56" width="8" height="20" rx="2" fill="#1B120E"/>
+        <line x1="22" y1="66" x2="78" y2="66" stroke="#D64541" stroke-width="3"/>
+        <path d="M12 40 L6 26" stroke="#C9C6C0" stroke-width="3" stroke-linecap="round"/>
+        <g fill="#FFFFFF" opacity=".8"><circle cx="4" cy="20" r="3"/><circle cx="8" cy="14" r="4"/></g>
+      </svg>
+      <div class="chip" style="margin-top:8px">Espresso machine</div>
+      <div class="figcap">Default: Arabica · gauge is the charge UI</div>
+    </div>
+    <div class="demo" style="text-align:center">
+      <svg viewBox="0 0 100 100" width="110" style="margin:0 auto" role="img" aria-label="Aeropress sniper">
+        <g transform="rotate(-12 50 50)">
+          <rect x="10" y="40" width="70" height="18" rx="3" fill="#FBF6EC" fill-opacity=".5" stroke="#1B120E" stroke-width="2.5"/>
+          <rect x="44" y="36" width="42" height="26" rx="3" fill="#1B120E"/>
+          <rect x="84" y="42" width="12" height="14" rx="2" fill="#C9C6C0"/>
+          <rect x="0" y="45" width="12" height="8" fill="#1B120E"/>
+          <circle cx="60" cy="30" r="6" fill="#FBF6EC" stroke="#1B120E" stroke-width="2"/>
+          <line x1="44" y1="58" x2="84" y2="58" stroke="#D64541" stroke-width="3"/>
+        </g>
+        <g stroke="#5A3A2A" stroke-width="3" stroke-linecap="round"><line x1="50" y1="60" x2="32" y2="92"/><line x1="50" y1="60" x2="68" y2="92"/><line x1="50" y1="60" x2="52" y2="94"/></g>
+      </svg>
+      <div class="chip" style="margin-top:8px">Aeropress sniper</div>
+      <div class="figcap">Unlock at Medium roast · ignores 50% steam</div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:12px">All four are primitives, at most 400 triangles, one shared Lambert material plus one glass. The barrel pivots to the aim angle, so the machine is the aim indicator.</p>
+</section>
+
+<!-- 6. AMMO -->
+<section>
+  <div class="eyebrow">06 · The ammo</div>
+  <h2>Beans, fired</h2>
+  <div class="grid g4">
+    <div class="demo"><svg viewBox="0 0 120 60" width="120"><g stroke="#8F9E6B" stroke-width="3" stroke-linecap="round"><line x1="10" y1="44" x2="12" y2="44" opacity=".2"/><line x1="24" y1="38" x2="26" y2="38" opacity=".4"/><line x1="40" y1="32" x2="42" y2="32" opacity=".6"/><line x1="56" y1="28" x2="58" y2="28" opacity=".8"/></g><ellipse cx="82" cy="26" rx="9" ry="13" fill="#8F9E6B" transform="rotate(30 82 26)"/><path d="M82 15 Q78 26 82 37" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="2" transform="rotate(30 82 26)"/></svg><div class="chip" style="margin-top:8px">Green bean ∞</div><div class="note" style="margin-top:6px">Five dots fading over 400ms. Impact: six green chips and a click.</div></div>
+    <div class="demo"><svg viewBox="0 0 120 60" width="120"><path d="M8 48 Q30 44 46 36 T74 26" fill="none" stroke="#3A2115" stroke-width="5" stroke-linecap="round" opacity=".4"/><ellipse cx="86" cy="26" rx="12" ry="16" fill="#3A2115"/><path d="M86 12 V40" stroke="rgba(0,0,0,.4)" stroke-width="2"/></svg><div class="chip" style="margin-top:8px">Dark roast ×3</div><div class="note" style="margin-top:6px">A single smoke thread. Drops sooner. Impact: ring of 12 chips, a low thud.</div></div>
+    <div class="demo"><svg viewBox="0 0 120 60" width="120"><g fill="#5C3A22"><rect x="60" y="12" width="7" height="7"/><rect x="72" y="20" width="7" height="7"/><rect x="66" y="30" width="7" height="7"/><rect x="80" y="34" width="7" height="7"/><rect x="58" y="42" width="7" height="7"/><rect x="76" y="46" width="7" height="7"/></g><path d="M14 30 L50 12 M14 30 L50 30 M14 30 L50 48" stroke="#1B120E" stroke-width="1" stroke-dasharray="2 3" opacity=".4"/></svg><div class="chip" style="margin-top:8px">Ground coffee ×2</div><div class="note" style="margin-top:6px">Six pellets fanned ±6°, the only cubes in the game. No trail. Grinder burst on fire.</div></div>
+    <div class="demo"><svg viewBox="0 0 120 60" width="120"><g fill="#FFFFFF" opacity=".8"><circle cx="20" cy="46" r="4"/><circle cx="32" cy="36" r="5"/><circle cx="46" cy="30" r="4"/></g><g transform="rotate(-30 80 30)"><path d="M68 16 H92 L89 46 H71 Z" fill="#FBF6EC" stroke="#1B120E" stroke-width="2"/><rect x="66" y="12" width="28" height="5" rx="1" fill="#1B120E"/><line x1="70" y1="26" x2="90" y2="26" stroke="#C8925A" stroke-width="3"/></g></svg><div class="chip" style="margin-top:8px">Full cup ×1</div><div class="note" style="margin-top:6px">Tumbles end over end with a steam spiral. Impact: 2-unit splash decal, 16 droplets, crema ring.</div></div>
+  </div>
+</section>
+
+<!-- 7. TYPOGRAPHY -->
+<section>
+  <div class="eyebrow">07 · Typography</div>
+  <h2>Two faces. The receipt does the talking.</h2>
+  <div class="spec"><span class="k">Headline 40 / 800</span><span style="font:800 40px/1.1 var(--display)">One cup gets brewed.</span></div>
+  <div class="spec"><span class="k">Title 24 / 800</span><span style="font:800 24px/1.1 var(--display)">The Grounds, at first light</span></div>
+  <div class="spec"><span class="k">Stamp word 64</span><span style="font:800 64px/1 var(--display)">Ground.</span></div>
+  <div class="spec"><span class="k">Number 28 mono</span><span style="font:700 28px/1 var(--mono);font-variant-numeric:tabular-nums">62° · 78% · +25 RP</span></div>
+  <div class="spec"><span class="k">Body 16 mono</span><span style="font:400 16px/1.5 var(--mono)">Where each bean stands is the difficulty. A bean on the ridge needs a high lob, a bean in the brew a flat shot through drifting steam.</span></div>
+  <div class="spec"><span class="k">Receipt line 14</span><span style="font:400 14px/1.4 var(--mono);font-variant-numeric:tabular-nums">HITS 2 / SHOTS 5 / STEAM MAX 4</span></div>
+  <div class="spec"><span class="k">Chip 12 mono</span><span class="chip">Moka pot mortar</span></div>
+  <h3>The house lines, as they will appear</h3>
+  <div class="house"><span>Enter the war.</span><span>Your shot.</span><span>Ground.</span><span>Roasted.</span><span>Decaf.</span><span>Gone cold.</span></div>
+  <p class="note" style="margin-top:12px">One to three words with a full stop. No exclamation marks, no emoji, anywhere in the game.</p>
+</section>
+
+<!-- 8. COMPONENTS -->
+<section>
+  <div class="eyebrow">08 · Components</div>
+  <h2>Rendered with the tokens</h2>
+
+  <h3>Buttons. Press one: the print press.</h3>
+  <div class="row" style="gap:16px"><button class="btn primary">One more go</button><button class="btn">Back to the Grounds</button><button class="btn danger">Dismiss duel</button></div>
+
+  <h3>Chips</h3>
+  <div class="row">
+    <span class="chip"><i class="dot" style="background:var(--arabica)"></i>Arabica</span>
+    <span class="chip"><i class="dot" style="background:var(--robusta)"></i>Robusta</span>
+    <span class="chip"><i class="dot" style="background:var(--liberica)"></i>Liberica</span>
+    <span class="chip on">Green bean ∞</span>
+    <span class="chip">Dark roast ×3</span>
+    <span class="chip">Ground ×2</span>
+    <span class="chip">Full cup ×1</span>
+    <span class="chip dim">Aeropress · locked</span>
+  </div>
+
+  <h3>Steam indicator</h3>
+  <div class="row" style="gap:16px">
+    <span class="chip">Steam 4 <svg width="34" height="10" viewBox="0 0 34 10"><line x1="0" y1="5" x2="26" y2="5" stroke="currentColor" stroke-width="2"/><path d="M22 1 L28 5 L22 9" fill="none" stroke="currentColor" stroke-width="2"/></svg></span>
+    <span class="chip">Steam 9 <svg width="64" height="10" viewBox="0 0 64 10"><line x1="0" y1="5" x2="56" y2="5" stroke="currentColor" stroke-width="2"/><path d="M52 1 L58 5 L52 9" fill="none" stroke="currentColor" stroke-width="2"/></svg></span>
+    <span class="chip"><svg width="34" height="10" viewBox="0 0 34 10"><path d="M12 1 L6 5 L12 9" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8" y1="5" x2="34" y2="5" stroke="currentColor" stroke-width="2"/></svg> Steam 4</span>
+    <span class="chip">Steam 0 ·</span>
+  </div>
+
+  <div class="grid g3" style="margin-top:24px">
+    <div>
+      <h3 style="margin-top:0">Power: the pressure gauge</h3>
+      <svg viewBox="0 0 120 70" width="160" role="img" aria-label="Power gauge at 78 percent">
+        <path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="#1B120E" stroke-width="6" stroke-linecap="butt"/>
+        <path d="M96.5 24.5 A50 50 0 0 1 110 60" fill="none" stroke="#B3261E" stroke-width="6"/>
+        <line x1="60" y1="60" x2="92" y2="21" stroke="#1B120E" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="60" cy="60" r="4" fill="#1B120E"/>
+        <text x="60" y="52" text-anchor="middle" font-family="Space Mono, monospace" font-weight="700" font-size="14" fill="#1B120E">78%</text>
+      </svg>
+      <div class="row" style="margin-top:6px"><span class="chip">62°</span><span class="chip">78%</span></div>
+      <div class="note" style="margin-top:6px">Last 15% in danger: the over-hold zone.</div>
+    </div>
+    <div>
+      <h3 style="margin-top:0">HP is a cup. No numbers.</h3>
+      <div class="row" style="gap:20px;align-items:flex-end">
+        <div style="text-align:center"><svg viewBox="0 0 40 48" width="40"><defs><clipPath id="c100"><path d="M6 8 H34 L30 46 H10 Z"/></clipPath></defs><g clip-path="url(#c100)"><rect x="0" y="8" width="40" height="40" fill="#2E1A12"/><rect x="0" y="8" width="40" height="3" fill="#C8925A"/></g><path d="M6 8 H34 L30 46 H10 Z" fill="none" stroke="#1B120E" stroke-width="2"/><rect x="4" y="4" width="32" height="5" rx="1" fill="#D64541"/></svg><div class="figcap">100</div></div>
+        <div style="text-align:center"><svg viewBox="0 0 40 48" width="40"><defs><clipPath id="c60"><path d="M6 8 H34 L30 46 H10 Z"/></clipPath></defs><g clip-path="url(#c60)"><rect x="0" y="23" width="40" height="25" fill="#2E1A12"/><rect x="0" y="23" width="40" height="3" fill="#C8925A"/></g><path d="M6 8 H34 L30 46 H10 Z" fill="none" stroke="#1B120E" stroke-width="2"/><rect x="4" y="4" width="32" height="5" rx="1" fill="#D64541"/></svg><div class="figcap">60</div></div>
+        <div style="text-align:center"><svg viewBox="0 0 40 48" width="40"><defs><clipPath id="c20"><path d="M6 8 H34 L30 46 H10 Z"/></clipPath></defs><g clip-path="url(#c20)"><rect x="0" y="38" width="40" height="10" fill="#2E1A12"/><rect x="0" y="38" width="40" height="3" fill="#C8925A"/></g><path d="M6 8 H34 L30 46 H10 Z" fill="none" stroke="#1B120E" stroke-width="2"/><rect x="4" y="4" width="32" height="5" rx="1" fill="#B3261E"/></svg><div class="figcap">20 · rim goes danger</div></div>
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-top:0">Turn strip</h3>
+      <div class="row" style="flex-direction:column;align-items:flex-start"><span class="turnstrip">Your shot <span class="who">· Miss Moka waits</span></span><span class="turnstrip">Their shot <span class="who">· fired 3h ago</span></span></div>
+    </div>
+  </div>
+
+  <h3>The Spotter: reading the grounds</h3>
+  <p class="note" style="margin-bottom:12px">You never see the opponent on the main stage. Their half is steam; the terrain silhouette reads, the bean does not. The Spotter is a cup-bottom window with a tight live crop of them, ±2 units, fogged beyond, no scale cue. Each of your impacts leaves a marker and thins the fog 1.5 units around it. One call prints under the window per turn.</p>
+  <div class="row" style="gap:24px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+      <div class="spotter"><div class="lens">
+        <svg viewBox="0 0 100 100" role="img" aria-label="Spotter window showing the opponent on stilts in fog">
+          <rect width="100" height="100" fill="#E7D3B4"/>
+          <rect x="0" y="62" width="100" height="38" fill="#2E1A12" opacity=".55"/>
+          <g stroke="#5A3A2A" stroke-width="3"><line x1="34" y1="64" x2="34" y2="90"/><line x1="66" y1="64" x2="66" y2="90"/></g>
+          <rect x="26" y="60" width="48" height="5" fill="#5A3A2A"/>
+          <g transform="translate(40,26)"><rect x="0" y="0" width="22" height="28" rx="2" fill="#1B120E"/><rect x="0" y="-3" width="22" height="4" fill="#C9C6C0"/><circle cx="11" cy="12" r="5" fill="#FBF6EC" stroke="#C9C6C0"/><line x1="11" y1="12" x2="14" y2="8" stroke="#1B120E" stroke-width="1.2"/><rect x="0" y="20" width="22" height="2" fill="#7FA7C4"/></g>
+          <g transform="translate(14,24)"><g style="color:#4A2A18"><svg viewBox="0 0 64 80" width="30" height="38"><use href="#b-robusta"/><use href="#f-squint"/></svg></g></g>
+          <g fill="#FFFFFF" opacity=".85"><circle cx="10" cy="18" r="9"/><circle cx="90" cy="30" r="10"/><circle cx="82" cy="80" r="8"/><circle cx="12" cy="82" r="8"/><circle cx="50" cy="8" r="7"/></g>
+        </svg>
+      </div></div>
+      <span class="chip call">Close.</span>
+      <div class="figcap">112px · cup rim · crema ring</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <div class="figcap" style="margin:0 0 6px">The three calls, one per turn</div>
+        <div class="row"><span class="chip call">Close.</span><span class="chip call">Wide.</span><span class="chip call">Long.</span></div>
+      </div>
+      <div>
+        <div class="figcap" style="margin:0 0 6px">Impact marker · permanent · thins fog 1.5 units</div>
+        <div class="row" style="gap:16px">
+          <svg viewBox="0 0 48 48" width="48"><circle cx="24" cy="24" r="20" fill="#E7D3B4" opacity=".35"/><circle cx="24" cy="24" r="12" fill="none" stroke="#1B120E" stroke-width="2" opacity=".6"/><circle cx="24" cy="24" r="6" fill="none" stroke="#1B120E" stroke-width="2" opacity=".6"/><circle cx="24" cy="24" r="1.8" fill="#1B120E"/></svg>
+          <svg viewBox="0 0 48 48" width="48"><circle cx="24" cy="24" r="12" fill="none" stroke="#1B120E" stroke-width="2" opacity=".6" stroke-dasharray="3 2"/><circle cx="24" cy="24" r="6" fill="none" stroke="#1B120E" stroke-width="2" opacity=".6"/><circle cx="24" cy="24" r="1.8" fill="#1B120E"/><g fill="#7DB35F"><circle cx="10" cy="14" r="2"/><circle cx="38" cy="12" r="2"/><circle cx="40" cy="36" r="2"/></g></svg>
+          <svg viewBox="0 0 48 48" width="48"><circle cx="24" cy="24" r="12" fill="none" stroke="#1B120E" stroke-width="2" opacity=".6"/><circle cx="24" cy="24" r="6" fill="none" stroke="#1B120E" stroke-width="2" opacity=".6"/><circle cx="24" cy="24" r="1.8" fill="#1B120E"/><g fill="#2E1A12"><circle cx="8" cy="30" r="2"/><circle cx="40" cy="20" r="2"/><circle cx="30" cy="8" r="1.6"/></g></svg>
+        </div>
+        <div class="figcap">Ridge dust · Belt leaf · Brew splash</div>
+      </div>
+      <div class="row"><span class="chip">Brew 0</span><span class="note">stance chip stays on the fogged side</span></div>
+    </div>
+  </div>
+
+  <h3>Roast rank: a date stamp with the roast in the middle</h3>
+  <div class="row" style="gap:14px">
+    <svg viewBox="0 0 80 80" width="72"><defs><path id="arc1" d="M40 40 m-27 0 a27 27 0 1 1 54 0 a27 27 0 1 1 -54 0"/></defs><circle cx="40" cy="40" r="36" fill="none" stroke="#1B120E" stroke-width="1.5"/><circle cx="40" cy="40" r="33" fill="none" stroke="#1B120E" stroke-width="1.5"/><circle cx="40" cy="40" r="14" fill="#8F9E6B"/><text font-family="Space Mono, monospace" font-size="8" font-weight="700" fill="#1B120E" letter-spacing="1.5"><textPath href="#arc1" startOffset="4%">GREEN · ROAST ·</textPath></text></svg>
+    <svg viewBox="0 0 80 80" width="72"><circle cx="40" cy="40" r="36" fill="none" stroke="#1B120E" stroke-width="1.5"/><circle cx="40" cy="40" r="33" fill="none" stroke="#1B120E" stroke-width="1.5"/><circle cx="40" cy="40" r="14" fill="#C69C6D"/><text font-family="Space Mono, monospace" font-size="8" font-weight="700" fill="#1B120E" letter-spacing="1.5"><textPath href="#arc1" startOffset="4%">LIGHT · ROAST ·</textPath></text></svg>
+    <svg viewBox="0 0 80 80" width="72"><circle cx="40" cy="40" r="36" fill="none" stroke="#1B120E" stroke-width="1.5"/><circle cx="40" cy="40" r="33" fill="none" stroke="#1B120E" stroke-width="1.5"/><circle cx="40" cy="40" r="14" fill="#8C5A2B"/><text font-family="Space Mono, monospace" font-size="8" font-weight="700" fill="#1B120E" letter-spacing="1.5"><textPath href="#arc1" startOffset="2%">MEDIUM · ROAST</textPath></text></svg>
+    <svg viewBox="0 0 80 80" width="72"><circle cx="40" cy="40" r="36" fill="none" stroke="#1B120E" stroke-width="1.5"/><circle cx="40" cy="40" r="33" fill="none" stroke="#1B120E" stroke-width="1.5"/><circle cx="40" cy="40" r="14" fill="#4A2A18"/><text font-family="Space Mono, monospace" font-size="8" font-weight="700" fill="#1B120E" letter-spacing="1.5"><textPath href="#arc1" startOffset="6%">DARK · ROAST ·</textPath></text></svg>
+    <svg viewBox="0 0 80 80" width="72"><circle cx="40" cy="40" r="36" fill="none" stroke="#1B120E" stroke-width="1.5"/><circle cx="40" cy="40" r="33" fill="none" stroke="#1B120E" stroke-width="1.5"/><circle cx="40" cy="40" r="14" fill="#201410"/><text font-family="Space Mono, monospace" font-size="8" font-weight="700" fill="#1B120E" letter-spacing="1.5"><textPath href="#arc1" startOffset="4%">BURNT · ROAST ·</textPath></text></svg>
+  </div>
+
+  <h3>Stamps</h3>
+  <div class="row" style="gap:20px"><span class="stamp ok">Roasted</span><span class="stamp dim">Decaf</span><span class="stamp">Your shot</span><span class="stamp sm">3</span></div>
+
+  <h3>Bean label on the map (text stroke, accent underline, streak, BOT tag)</h3>
+  <div class="mapbg">
+    <span class="maplabel"><span class="nm">Maeve · ETH</span><span class="steam">≈<br>≈<br>≈</span></span>
+    <span class="maplabel"><span class="nm" style="border-color:#7FA7C4">Big Robusto · VNM</span><span class="bot">BOT</span></span>
+    <span class="maplabel"><span class="nm" style="border-color:#5FA65A">Blend 42 · BRA</span><span class="steam">≈<br>≈<br>≈</span><span>×7</span><span class="bot">BOT</span></span>
+  </div>
+</section>
+
+<!-- 9. CARDS -->
+<section>
+  <div class="eyebrow">09 · Cards and sheets</div>
+  <h2>Everything is a receipt</h2>
+  <div class="grid g2" style="align-items:start">
+    <div>
+      <div class="figcap" style="margin-bottom:8px">Result card · prints from the top edge</div>
+      <div class="receipt">
+        <div class="title">DUEL #0412</div>
+        <div class="line"><span>VS</span><span>MISS MOKA · GTM</span></div>
+        <div class="line"><span>STAGE</span><span>RIDGE +3 vs BELT +1.5</span></div>
+        <div class="tear"></div>
+        <div class="line"><span>HITS</span><span>2</span></div>
+        <div class="line"><span>SHOTS</span><span>5</span></div>
+        <div class="line"><span>STEAM MAX</span><span>4</span></div>
+        <div class="line"><span>DAMAGE</span><span>100</span></div>
+        <div class="line"><span>TAKEN</span><span>45</span></div>
+        <div class="tear"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><div><div class="small muted">RESULT</div><div class="big">+25 RP</div></div><span class="stamp ok">Roasted</span></div>
+        <div class="line"><span>ROAST</span><span class="bar">[||||||....] 150 / 350</span></div>
+        <div class="actions"><button class="btn primary wide">One more go</button><button class="btn wide">Back to the Grounds</button><div class="link">Share</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="figcap" style="margin-bottom:8px">Landing · 10 seconds, one receipt</div>
+      <div class="receipt">
+        <div class="title">Coffee Beans War</div>
+        <div class="line" style="font-size:16px"><span>NAME:</span><span class="caret">MAEVE</span></div>
+        <div class="tear"></div>
+        <div class="small muted" style="margin-bottom:6px">CLASS</div>
+        <div class="picker">
+          <div class="pk on"><svg viewBox="0 0 64 80" width="44" style="color:var(--roast-green);margin:0 auto"><use href="#b-arabica"/><use href="#f-deadpan"/></svg>Arabica</div>
+          <div class="pk"><svg viewBox="0 0 64 80" width="44" style="color:var(--roast-green);margin:0 auto"><use href="#b-robusta"/><use href="#f-deadpan"/></svg>Robusta</div>
+          <div class="pk"><svg viewBox="0 0 64 80" width="44" style="color:var(--roast-green);margin:0 auto"><use href="#b-liberica"/><use href="#f-deadpan"/></svg>Liberica</div>
+        </div>
+        <div class="small muted" style="margin:12px 0 6px">ORIGIN</div>
+        <div class="row"><span class="chip">COL</span><span class="chip on">ETH</span><span class="chip">BRA</span><span class="chip">VNM</span><span class="chip">KEN</span><span class="chip">GTM</span><span class="chip">CRI</span><span class="chip">IDN</span></div>
+        <div class="small muted" style="margin:12px 0 6px">FACE</div>
+        <div class="row" style="gap:4px">
+          <svg viewBox="0 0 64 80" width="28" style="color:var(--roast-green)"><use href="#b-arabica"/><use href="#f-deadpan"/></svg>
+          <svg viewBox="0 0 64 80" width="28" style="color:var(--roast-green)"><use href="#b-arabica"/><use href="#f-squint"/></svg>
+          <svg viewBox="0 0 64 80" width="28" style="color:var(--roast-green)"><use href="#b-arabica"/><use href="#f-grin"/></svg>
+          <svg viewBox="0 0 64 80" width="28" style="color:var(--roast-green)"><use href="#b-arabica"/><use href="#f-sleepy"/></svg>
+          <svg viewBox="0 0 64 80" width="28" style="color:var(--roast-green)"><use href="#b-arabica"/><use href="#f-wide"/></svg>
+          <svg viewBox="0 0 64 80" width="28" style="color:var(--roast-green)"><use href="#b-arabica"/><use href="#f-wink"/></svg>
+        </div>
+        <div class="small muted" style="margin:12px 0 6px">ACCENT</div>
+        <div class="swrow"><i style="background:#E8B86D"></i><i class="on" style="background:#D64541"></i><i style="background:#5FA65A"></i><i style="background:#F6F1E7;box-shadow:inset 0 0 0 1px #D9D2C7"></i><i style="background:#C77A2E"></i><i style="background:#1B120E"></i><i style="background:#7FA7C4"></i><i style="background:#D98A9E"></i></div>
+        <div class="actions"><button class="btn primary wide">Enter the war</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g2" style="align-items:start;margin-top:24px">
+    <div>
+      <div class="figcap" style="margin-bottom:8px">Challenge card · confirming fires your first shot</div>
+      <div class="receipt">
+        <div style="display:flex;gap:14px;align-items:center">
+          <svg viewBox="0 0 64 80" width="72" style="color:var(--roast-medium)"><use href="#b-liberica"/><use href="#f-wink"/></svg>
+          <div><div class="title" style="margin:0">MISS MOKA</div><div class="small muted">GTM · LIBERICA</div></div>
+        </div>
+        <div class="tear"></div>
+        <div class="row"><span class="chip"><i class="dot" style="background:var(--liberica)"></i>Liberica</span><span class="chip">French press</span></div>
+        <div class="line" style="margin-top:8px"><span>STANCE</span><span>BELT +1.5 vs RIDGE +3</span></div>
+        <div class="line"><span>RECORD</span><span>12 W · 4 L</span></div>
+        <div class="line"><span>ROAST</span><span>MEDIUM</span></div>
+        <div class="tear"></div>
+        <div class="small muted" style="margin-bottom:6px">YOUR MACHINE</div>
+        <div class="row"><span class="chip on">Espresso</span><span class="chip">Moka pot</span><span class="chip">French press</span><span class="chip dim">Aeropress</span></div>
+        <div class="actions"><button class="btn primary wide">Challenge</button><button class="btn wide">Back</button></div>
+      </div>
+    </div>
+    <div>
+      <div class="figcap" style="margin-bottom:8px">Inbox stub on the world HUD · hidden at 0</div>
+      <div class="stub"><span class="stamp sm" style="transform:rotate(-8deg)">3</span><span>3 beans are shooting at you</span></div>
+      <div class="figcap" style="margin:20px 0 8px">Inbox rows · accent bar = they hit you last turn</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="inrow hit">
+          <svg viewBox="0 0 64 80" width="40" style="color:var(--roast-medium)"><use href="#b-liberica"/><use href="#f-wink"/></svg>
+          <div><div class="nm">Miss Moka · GTM</div><div class="st">Belt ▸ Ridge · fired 3h ago</div></div>
+          <div class="cups"><svg viewBox="0 0 40 48" width="12"><path d="M6 8 H34 L30 46 H10 Z" fill="#2E1A12" stroke="#1B120E" stroke-width="3"/></svg><svg viewBox="0 0 40 48" width="12"><defs><clipPath id="cm"><path d="M6 8 H34 L30 46 H10 Z"/></clipPath></defs><g clip-path="url(#cm)"><rect x="0" y="26" width="40" height="22" fill="#2E1A12"/></g><path d="M6 8 H34 L30 46 H10 Z" fill="none" stroke="#1B120E" stroke-width="3"/></svg></div>
+          <div></div><span>›</span>
+        </div>
+        <div class="inrow">
+          <svg viewBox="0 0 64 80" width="40" style="color:var(--roast-dark)"><use href="#b-robusta"/><use href="#f-squint"/></svg>
+          <div><div class="nm">Bitter Ted · BRA</div><div class="st">Ridge ▸ Brew · fired 1d ago</div></div>
+          <div class="cups"><svg viewBox="0 0 40 48" width="12"><path d="M6 8 H34 L30 46 H10 Z" fill="#2E1A12" stroke="#1B120E" stroke-width="3"/></svg><svg viewBox="0 0 40 48" width="12"><path d="M6 8 H34 L30 46 H10 Z" fill="#2E1A12" stroke="#1B120E" stroke-width="3"/></svg></div>
+          <div></div><span>›</span>
+        </div>
+        <div class="small muted" style="letter-spacing:.08em;text-transform:uppercase;margin-top:6px">Gone cold</div>
+        <div class="inrow cold">
+          <svg viewBox="0 0 64 80" width="40" style="color:var(--roast-light);opacity:.6"><use href="#b-arabica"/><use href="#f-sleepy"/></svg>
+          <div><div class="nm">Cold Brew Su · KEN</div><div class="st">Belt ▸ Belt · 9d ago</div></div>
+          <div></div><button class="btn" style="height:32px;padding:0 10px;font-size:11px;border-color:var(--ink-dim);color:var(--ink-dim);box-shadow:2px 2px 0 var(--ink-dim)">Reheat</button><span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. MOTION -->
+<section>
+  <div class="eyebrow">10 · Motion</div>
+  <h2>Heavy and snappy. Nothing loops, nothing floats.</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Move</th><th>Timing</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td>Challenge accepted</td><td>900ms</td><td>Others fade to 40%; camera flies world to duel side, FOV 30° to 8°; ortho cut behind a 60ms steam wipe; HUD chips slide up 24px</td></tr>
+      <tr><td>The Pour (watch their shot)</td><td>≤ 3.5s</td><td>Paper letterbox bands feed in (400ms); their shot replays under their steam; hold 300ms; steam veers to yours; bands retract; YOUR SHOT stamps in</td></tr>
+      <tr><td>Shot arc</td><td>≤ 2.5s</td><td>Camera locked. Ghost trail of last shot stays one turn. Bean squash 1.15 / 0.85 for 80ms</td></tr>
+      <tr><td>Hit</td><td>60ms hit-stop, 180ms shake</td><td>6px amplitude, 3 oscillations, exponential decay, on the camera. Paper flash 2 frames. Cup drains over 400ms after a 100ms delay</td></tr>
+      <tr><td>Miss</td><td>600 / 800 / 700ms</td><td>Brew splash · Ridge tumble down two terraces · Belt leaf burst. Nobody's face changes</td></tr>
+      <tr><td>Fog thinning</td><td>300ms per impact</td><td>Radial reveal from the impact point to 1.5 units, ease-out; marker draws in the last 100ms. Permanent. Six pellets stagger 40ms</td></tr>
+      <tr><td>Spotter flinch, Close.</td><td>80ms, chip 120ms later</td><td>Inside the window the bean squashes 1.15 / 0.85, face cuts to hit for 400ms; the window never moves. Wide. and Long. print without a flinch</td></tr>
+      <tr><td>KO fog lift</td><td>600ms before Ground.</td><td>Fog plane fades to 0, dense sprites disperse outward from the opponent, the Spotter empties. The kill is the only time you see them on the stage</td></tr>
+      <tr><td>KO, Ground.</td><td>1.4s</td><td>Shake 300ms; mesh becomes a heap of 120 pellets; winner face; receipt prints with printer buzz</td></tr>
+      <tr><td>Return to world</td><td>700ms</td><td>Reverse of challenge, faster, steam wipe over the cut</td></tr>
+      <tr><td>Rank up, Roasted.</td><td>400ms, on the map</td><td>Body lerps one roast stop, one smoke wisp, a tsss, the stamp</td></tr>
+      <tr><td>Inbox badge print</td><td>200ms</td><td>Slides up 12px and fades in, one wisp. No pulse, no red dot</td></tr>
+      <tr><td>UI ease</td><td>200ms</td><td>cubic-bezier(.2,.8,.2,1), never overshoots. Text never moves after it lands</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Live: the print press and the stamp-in</h3>
+  <div class="demo" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+    <button class="btn primary" id="fire">Fire</button>
+    <span class="stamp" id="stamp" style="opacity:0" aria-live="polite">Your shot</span>
+    <span class="note">Tap Fire: the button presses 2px into the paper, then YOUR SHOT stamps in at scale 1.3 to 1.0 over 120ms. It does not loop.</span>
+  </div>
+</section>
+
+<!-- 11. SOUND -->
+<section>
+  <div class="eyebrow">11 · Sound</div>
+  <h2>If it did not come from a kitchen, it is not in</h2>
+  <div class="grid g2" style="align-items:start">
+    <div class="receipt wide">
+      <div class="title">MUSIC</div>
+      <div class="line"><span>WORLD LOOP</span><span>84 BPM · 32 bars</span></div>
+      <div class="small muted" style="margin-bottom:8px">Kitchen percussion: tapped cups as marimba, beans in a tin as shaker, kettle tick as hi-hat, soft upright bass. Tape-warm. No bossa, no lo-fi.</div>
+      <div class="line"><span>DUEL LOOP</span><span>112 BPM · 16 bars · 2 stems</span></div>
+      <div class="small muted">Grinder burst as snare, moka gurgle pitched as bass, cup taps as melody. Tension stem (cup ≤ 25%): steam-wand hiss as sustained hi-hat, cup taps double.</div>
+      <div class="tear"></div>
+      <div class="line"><span>SOURCING</span><span>Record in Diego's kitchen</span></div>
+      <div class="small muted">Grinder, kettle, steam wand, moka gurgle, press plunge, Aeropress push, beans into a tin, cup on saucer, spoon on cup, paper cup dropped. Generate only as fallback. Mono OGG 44.1kHz.</div>
+    </div>
+    <div class="receipt wide">
+      <div class="title">SFX · 22</div>
+      <div class="line"><span>01 Moka pot fire</span><span>gurgle-pop, steam puff</span></div>
+      <div class="line"><span>02 French press fire</span><span>thunk, whoosh</span></div>
+      <div class="line"><span>03 Press misfire</span><span>plunger on glass</span></div>
+      <div class="line"><span>04 Espresso charge</span><span>wand hiss rising</span></div>
+      <div class="line"><span>05 Espresso fire</span><span>ksh-TAK</span></div>
+      <div class="line"><span>06 Aeropress fire</span><span>pff-thup</span></div>
+      <div class="line"><span>07 Green bean hit</span><span>bean on counter</span></div>
+      <div class="line"><span>08 Dark roast hit</span><span>bean in empty tin</span></div>
+      <div class="line"><span>09 Ground fire</span><span>grinder 300ms</span></div>
+      <div class="line"><span>10 Ground hit</span><span>dry shh per pellet</span></div>
+      <div class="line"><span>11 Full cup hit</span><span>splat, cup clatter</span></div>
+      <div class="line"><span>12 Brew splash</span><span>spoon into full mug</span></div>
+      <div class="line"><span>13 Ridge tumble</span><span>3 clicks descending</span></div>
+      <div class="line"><span>14 Belt leaves</span><span>dry leaves rustled</span></div>
+      <div class="line"><span>15 Steam change</span><span>short release 250ms</span></div>
+      <div class="line"><span>16 UI tick</span><span>bean on paper</span></div>
+      <div class="line"><span>17 Stamp</span><span>rubber stamp</span></div>
+      <div class="line"><span>18 Receipt print</span><span>thermal buzz 500ms</span></div>
+      <div class="line"><span>19 Challenge</span><span>wand rise, cup on saucer</span></div>
+      <div class="line"><span>20 Roasted.</span><span>beans into jar, clink</span></div>
+      <div class="line"><span>21 Decaf.</span><span>kettle click, boil dies</span></div>
+      <div class="line"><span>22 Ground.</span><span>grinder running down</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. ASSETS + PERF -->
+<section>
+  <div class="eyebrow">12 · Asset count and performance guardrails</div>
+  <h2>27 built, 4 generated, 24 audio. 55 files.</h2>
+  <div class="grid g2" style="align-items:start">
+    <div class="scroll"><table style="min-width:0">
+      <thead><tr><th>Asset class</th><th class="num">Count</th><th>Method</th></tr></thead>
+      <tbody>
+        <tr><td>Bean bases</td><td class="num">3</td><td>code, lathe</td></tr>
+        <tr><td>Face sprite sheet</td><td class="num">1</td><td>hand-drawn SVG, 1024²</td></tr>
+        <tr><td>Accessories</td><td class="num">6</td><td>code</td></tr>
+        <tr><td>Machines</td><td class="num">4</td><td>code</td></tr>
+        <tr><td>Terrain</td><td class="num">1</td><td>seeded heightmap 128×128</td></tr>
+        <tr><td>Vegetation</td><td class="num">2</td><td>tree, shrub</td></tr>
+        <tr><td>Stance props</td><td class="num">2</td><td>stilt, branch platform</td></tr>
+        <tr><td>Map props</td><td class="num">3</td><td>sack, Roaster, slot ring</td></tr>
+        <tr><td>Ammo</td><td class="num">2</td><td>cup, pellet</td></tr>
+        <tr><td>Sprites</td><td class="num">2</td><td>steam 128², particle 64²</td></tr>
+        <tr><td>Sky</td><td class="num">1</td><td>gradient shader</td></tr>
+        <tr><td>UI textures</td><td class="num">0</td><td>paper is CSS</td></tr>
+        <tr><td>Generated images</td><td class="num">4</td><td>Higgsfield, prompts in ART-DIRECTION §11</td></tr>
+        <tr><td>Music · SFX</td><td class="num">2 · 22</td><td>generated · recorded</td></tr>
+      </tbody>
+    </table></div>
+    <div class="scroll"><table style="min-width:0">
+      <thead><tr><th>Budget</th><th>World</th><th>Duel</th></tr></thead>
+      <tbody>
+        <tr><td>Target</td><td colspan="2">60 fps on Pixel 6a class, 30 fps floor</td></tr>
+        <tr><td>Visible tris</td><td>≤ 120k</td><td>≤ 60k</td></tr>
+        <tr><td>Bean · machine</td><td colspan="2">≤ 240 + 120 + 20 · ≤ 400</td></tr>
+        <tr><td>Draw calls</td><td>≤ 40</td><td>≤ 30</td></tr>
+        <tr><td>Materials</td><td colspan="2">1 Lambert (vertex colours), 1 transparent, 1 sky, 1 flood</td></tr>
+        <tr><td>Lights</td><td colspan="2">1 directional + 1 hemisphere. Nothing else</td></tr>
+        <tr><td>Shadow map</td><td colspan="2">1024² mobile, 2048² desktop, PCF soft</td></tr>
+        <tr><td>Textures</td><td colspan="2">face atlas 1024², steam 128², particle 64². That is all</td></tr>
+        <tr><td>Steam sprites</td><td>≤ 40</td><td>≤ 80 sudden death</td></tr>
+        <tr><td>Particles</td><td colspan="2">≤ 24 per event, ≤ 96 alive, one pool</td></tr>
+        <tr><td>Pixel ratio</td><td colspan="2">min(dpr, 2) desktop, min(dpr, 1.5) mobile, drop to 1 after 60 slow frames</td></tr>
+        <tr><td>Post-processing</td><td colspan="2">None</td></tr>
+        <tr><td>First playable</td><td colspan="2">≤ 1.5 MB gzipped</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <p class="note" style="margin-top:12px">When something has to go: cut particles before sprites, sprites before shadows, shadows before fog, and never the steam layer. It is gameplay information.</p>
+</section>
+
+<footer style="padding-top:32px" class="small muted">Coffee Beans War · design system v0.1 · built from docs/ART-DIRECTION.md · Lola, AI with Diego</footer>
+</div>
+
+<script>
+(function(){
+  var fire=document.getElementById('fire'),stamp=document.getElementById('stamp');
+  if(!fire||!stamp)return;
+  fire.addEventListener('click',function(){
+    stamp.classList.remove('in');
+    void stamp.offsetWidth;
+    stamp.style.opacity='';
+    stamp.classList.add('in');
+  });
+})();
+</script>

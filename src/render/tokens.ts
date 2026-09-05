@@ -1,0 +1,25 @@
+// Mirrors docs/ART-DIRECTION.md §3. No colour exists outside this table.
+export const TOKENS = {
+  skyZenith: 0xf3eee4,
+  skyHorizon: 0xe7d3b4,
+  rock: 0x59566b,
+  rockLit: 0x7f7b95,
+  soil: 0x8e3b26,
+  canopyLight: 0x7db35f,
+  canopyDark: 0x3f7a40,
+  trunk: 0x5a3a2a,
+  cherry: 0xc7382e,
+  flood: 0x2e1a12,
+  floodGlint: 0x4a2b1b,
+  crema: 0xc8925a,
+  ink: 0x1b120e,
+  paper: 0xfbf6ec,
+  roast: {
+    green: 0x8f9e6b,
+    light: 0xc69c6d,
+    medium: 0x8c5a2b,
+    dark: 0x4a2a18,
+    burnt: 0x201410,
+  },
+  keyLight: 0xfff1dc,
+} as const;

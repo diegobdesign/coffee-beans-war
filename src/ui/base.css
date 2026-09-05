@@ -1,0 +1,78 @@
+:root {
+  --paper: #fbf6ec;
+  --ink: #1b120e;
+  --ink-dim: #6b5a4e;
+  --accent: #e8a33c;
+  --danger: #b3261e;
+  --success: #3f7a40;
+  --sky-zenith: #f3eee4;
+  --sky-horizon: #e7d3b4;
+  --font-display: 'Bricolage Grotesque', 'Arial Black', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, Menlo, monospace;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--sky-zenith);
+  color: var(--ink);
+  overscroll-behavior: none;
+}
+body {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.3;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#gl {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#app {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+#app > * {
+  pointer-events: auto;
+}
+.chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 10px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  box-shadow: 2px 2px 0 var(--ink);
+  font: 700 12px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.chip--tl {
+  top: max(12px, env(safe-area-inset-top));
+  left: 12px;
+}
+.chip--br {
+  bottom: max(12px, env(safe-area-inset-bottom));
+  right: 12px;
+}
+.chip--dim {
+  color: var(--ink-dim);
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
