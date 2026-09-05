@@ -2,6 +2,7 @@ import { chip } from '../components/chip';
 import { createCup, type Cup } from '../components/cup';
 import { createGauge, type Gauge } from '../components/gauge';
 import type { Ammo } from '../../sim/types';
+import { createReceipt, type ReceiptData } from '../components/receipt';
 
 export interface DuelHudHandlers {
   onKeyboardAim(angleDd: number, powerPm: number): void;
@@ -23,7 +24,7 @@ export interface DuelHud {
   setRack(rack: { dark: number; ground: number; cup: number }, selected: Ammo): void;
   setMachine(name: string): void;
   setCall(text: string | null): void;
-  setResult(text: string | null): void;
+  showReceipt(data: ReceiptData): void;
   setBracket(lo: number | null, hi: number | null): void;
   readAim(): { angleDd: number; powerPm: number };
   dispose(): void;
@@ -151,13 +152,8 @@ export function createDuelHud(app: HTMLElement, h: DuelHudHandlers): DuelHud {
   row2.append(rack, machine, stances);
   block.append(row1, row2);
 
-  const oneMore = document.createElement('button');
-  oneMore.className = 'btn btn--primary chip--hidden one-more';
-  oneMore.type = 'button';
-  oneMore.textContent = 'ONE MORE GO';
-  oneMore.addEventListener('click', (e) => {
-    h.onOneMoreGo(e);
-  });
+  const receiptHost = document.createElement('div');
+  receiptHost.className = 'receipt-host chip--hidden';
 
   const readAim = (): { angleDd: number; powerPm: number } => ({
     angleDd: Math.round(angleIn.valueAsNumber * 10),
@@ -187,7 +183,7 @@ export function createDuelHud(app: HTMLElement, h: DuelHudHandlers): DuelHud {
     spotterStack,
     spotterRing,
     block,
-    oneMore,
+    receiptHost,
   );
   app.append(root);
 
@@ -246,12 +242,21 @@ export function createDuelHud(app: HTMLElement, h: DuelHudHandlers): DuelHud {
       call.classList.toggle('chip--hidden', text === null);
       call.textContent = text ?? '';
     },
-    setResult(text) {
-      result.classList.toggle('chip--hidden', text === null);
-      result.textContent = text ?? '';
-      oneMore.classList.toggle('chip--hidden', text === null);
-      block.classList.toggle('chip--hidden', text !== null);
-      if (text !== null) oneMore.focus();
+    showReceipt(data) {
+      result.classList.remove('chip--hidden');
+      result.textContent = data.won ? 'Ground.' : 'Decaf.';
+      block.classList.add('chip--hidden');
+      aimLayer.classList.add('chip--hidden');
+      const r = createReceipt(data, (e) => {
+        h.onOneMoreGo(e);
+      });
+      receiptHost.replaceChildren(r.el);
+      receiptHost.classList.remove('chip--hidden');
+      // the receipt prints from the top edge; the result stamp gives way to it
+      window.setTimeout(() => {
+        result.classList.add('chip--hidden');
+        r.primary.focus();
+      }, 900);
     },
     setBracket(lo, hi) {
       gauge.setBracket(lo, hi);
