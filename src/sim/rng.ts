@@ -40,3 +40,10 @@ export function mulberry32(seed: number): Rng {
 export function turnRng(duelSeed: number, turnIndex: number): Rng {
   return mulberry32(fnv1a32(`${String(duelSeed >>> 0)}:${String(turnIndex)}`));
 }
+
+/** Irwin-Hall approximation of a standard normal: 12 uniforms minus 6. No log, no cos. */
+export function gaussian(rng: Rng): number {
+  let s = 0;
+  for (let i = 0; i < 12; i++) s += rng.next();
+  return s - 6;
+}
