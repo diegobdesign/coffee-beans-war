@@ -76,3 +76,29 @@ body {
     transition: none !important;
   }
 }
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hud > * {
+  pointer-events: auto;
+}
+.chip--tc {
+  top: max(12px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+}
+.chip--bc {
+  bottom: max(12px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+}
+@media (max-width: 640px) {
+  .chip--tc {
+    top: calc(max(12px, env(safe-area-inset-top)) + 40px);
+  }
+  .chip--bc {
+    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 40px);
+  }
+}

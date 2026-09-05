@@ -30,7 +30,7 @@ export function createGl(canvas: HTMLCanvasElement): Gl {
 
   const scene = new Scene();
   scene.background = new Color(TOKENS.skyZenith);
-  scene.fog = new Fog(TOKENS.skyHorizon, 30, 70);
+  scene.fog = new Fog(TOKENS.skyHorizon, 25, 80); // mid band ~55%, far band ~85% at the duel camera (ART-DIRECTION §2)
 
   canvas.addEventListener('webglcontextlost', (e) => {
     e.preventDefault();
