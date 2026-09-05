@@ -278,3 +278,35 @@ export function replayDuel(setup: DuelSetup, turns: readonly TurnInput[]): DuelS
   }
   return state;
 }
+
+/**
+ * The preview arc: the same integrator, the shooter's nominal angle (no class spread, no misfire),
+ * one projectile. Presentation only, never stored. Callers take the first 30% of the steps.
+ */
+export function previewTrajectory(
+  setup: DuelSetup,
+  state: DuelState,
+  input: TurnInput,
+): Float64Array {
+  const shooter = state.toMove;
+  const me = setup.sides[shooter];
+  const stage = buildStage(setup);
+  const machine = MACHINE[me.machine];
+  const ammo = AMMO[input.ammo];
+  const speed = (input.powerPerMille / 1000) * V_MAX * machine.speed;
+  const forward = shooter === 0 ? 1 : -1;
+  const ax = ((state.steam * K_STEAM) / ammo.mass) * machine.steamMult;
+  const a = forward === 1 ? input.angleDeciDeg : 1800 - input.angleDeciDeg;
+  const f = fly(
+    stage,
+    {
+      x0: stage.beanX[shooter] + forward * 0.6,
+      y0: stage.beanY[shooter] + 1.0,
+      vx0: speed * cosDeciDeg(a),
+      vy0: speed * sinDeciDeg(a),
+      ax,
+    },
+    shooter,
+  );
+  return f.trajectory;
+}
