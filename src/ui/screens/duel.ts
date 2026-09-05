@@ -13,6 +13,8 @@ export interface DuelHudHandlers {
 export interface DuelHud {
   readonly root: HTMLElement;
   readonly aimLayer: HTMLElement;
+  /** the cup window the Spotter camera renders into (a hole in a paper frame) */
+  readonly spotterEl: HTMLElement;
   setTurn(text: string): void;
   setSteam(value: number): void;
   setStances(left: string, right: string): void;
@@ -60,13 +62,29 @@ export function createDuelHud(app: HTMLElement, h: DuelHudHandlers): DuelHud {
   turn.id = 'turn';
   turn.setAttribute('aria-live', 'polite');
   const steam = chip(steamText(0), 'chip--tc');
-  const call = chip('', 'chip--tr2', 'chip--hidden');
+  const call = chip('', 'chip--inline', 'chip--hidden', 'chip--call');
   call.id = 'call';
   call.setAttribute('aria-live', 'polite');
   const result = chip('', 'chip--center', 'chip--hidden', 'chip--big');
   result.id = 'shotresult';
   result.setAttribute('aria-live', 'polite');
 
+  // the Spotter stack: window, opponent cup under it, call chip under that (UX.md §4.1)
+  const spotterStack = document.createElement('div');
+  spotterStack.className = 'spotter-stack';
+  const spotterEl = document.createElement('div');
+  spotterEl.className = 'spotter';
+  spotterEl.setAttribute('role', 'img');
+  spotterEl.setAttribute(
+    'aria-label',
+    'The Spotter: a close view of your opponent. You cannot see how far away they are.',
+  );
+  const spotterRim = document.createElement('div');
+  spotterRim.className = 'spotter-rim';
+  spotterEl.append(spotterRim);
+  const spotterRing = document.createElement('div');
+  spotterRing.className = 'spotter-ring';
+  spotterRing.setAttribute('aria-hidden', 'true');
   const cupYou: Cup = createCup('Your cup');
   const cupThem: Cup = createCup('Their cup');
   const cups = document.createElement('div');
@@ -74,10 +92,8 @@ export function createDuelHud(app: HTMLElement, h: DuelHudHandlers): DuelHud {
   const cupL = document.createElement('div');
   cupL.className = 'cup-slot cup-slot--l';
   cupL.append(cupYou.el);
-  const cupR = document.createElement('div');
-  cupR.className = 'cup-slot cup-slot--r';
-  cupR.append(cupThem.el);
-  cups.append(cupL, cupR);
+  spotterStack.append(spotterEl, cupThem.el, call);
+  cups.append(cupL);
 
   // HUD block
   const block = document.createElement('div');
@@ -161,12 +177,24 @@ export function createDuelHud(app: HTMLElement, h: DuelHudHandlers): DuelHud {
     h.onFire(a.angleDd, a.powerPm, e);
   });
 
-  root.append(title, aimLayer, turn, steam, call, result, cups, block, oneMore);
+  root.append(
+    title,
+    aimLayer,
+    turn,
+    steam,
+    result,
+    cups,
+    spotterStack,
+    spotterRing,
+    block,
+    oneMore,
+  );
   app.append(root);
 
   return {
     root,
     aimLayer,
+    spotterEl,
     setTurn(text) {
       turn.textContent = text;
     },

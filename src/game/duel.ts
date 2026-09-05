@@ -24,6 +24,8 @@ export interface DuelController {
 
 export interface DuelControllerOptions {
   readonly opponentName: string;
+  /** the scripted first duel: first two of your impacts thin fog at 2.5 units (UX.md §4.5c) */
+  readonly firstDuel: boolean;
   readonly roast: readonly [number, number];
   readonly accent: readonly [number, number];
   onOneMoreGo(): void;
@@ -48,6 +50,7 @@ export function createDuel(
   const gate = createGate();
 
   const view: DuelView = createDuelView(canvas, setup, { roast: opts.roast, accent: opts.accent });
+  let yourImpacts = 0;
   const hud: DuelHud = createDuelHud(app, {
     onKeyboardAim(angleDd, powerPm) {
       if (phase !== 'aim') return;
@@ -105,12 +108,17 @@ export function createDuel(
     view.setAim(YOU, null);
     playback = view.shots.play(result, input.ammo, (impact) => {
       view.shots.addMarker(impact);
+      const radius = opts.firstDuel && yourImpacts < 2 ? 2.5 : impact.fogRadius;
+      yourImpacts += 1;
+      view.fog.revealAt(impact.x, impact.y + 0.4, radius);
     });
     const finish = (): void => {
       if (result.hitSide !== null) {
         view.hitStop(60);
         view.shake();
         view.hitReact(result.hitSide);
+      } else if (result.call === 'close') {
+        view.squash(1); // the flinch in the window
       }
       state = applyShot(setup, state, input, result);
       if (result.call === 'short') lastShort = Math.max(lastShort ?? 0, a.powerPm);
@@ -151,6 +159,8 @@ export function createDuel(
   const afterTurn = (): void => {
     if (state.outcome !== 'active') {
       phase = 'over';
+      view.liftFog(600);
+      view.setAim(YOU, null);
       const won = state.outcome === 'side0';
       hud.setTurn(won ? 'Roasted.' : 'Decaf.');
       hud.setResult(won ? 'Ground.' : 'Decaf.');
@@ -193,6 +203,7 @@ export function createDuel(
     () => phase === 'aim',
   );
 
+  view.setSpotterElement(hud.spotterEl);
   hud.setMachine(MACHINE_NAME[setup.sides[YOU].machine]);
   hud.setStances(sideLabel(setup, YOU), sideLabel(setup, 1));
   hud.setTurn(`YOUR SHOT.  ·  VS ${opts.opponentName}`);

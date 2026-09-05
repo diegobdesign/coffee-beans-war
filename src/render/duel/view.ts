@@ -1,5 +1,5 @@
-import type { OrthographicCamera, Scene, WebGLRenderer } from 'three';
-import type { Group, Object3D } from 'three';
+import { OrthographicCamera } from 'three';
+import type { Group, Object3D, Scene, WebGLRenderer } from 'three';
 import { createBean, type Bean } from '../../assets/bean';
 import { createMachine } from '../../assets/machines';
 import type { Frame } from '../../core/clock';
@@ -9,6 +9,7 @@ import type { DuelSetup, Side } from '../../sim/types';
 import { createDuelCamera, fitDuelCamera } from '../cameras';
 import { addLights } from '../lights';
 import { createGl } from '../renderer';
+import { createFogVeil, FOG_LAYER, type FogVeil } from './fog';
 import { createShotLayer, type ShotLayer } from './shot';
 import { buildStage } from './stage';
 
@@ -23,6 +24,11 @@ export interface DuelView {
   readonly scene: Scene;
   readonly renderer: WebGLRenderer;
   readonly shots: ShotLayer;
+  readonly fog: FogVeil;
+  /** the DOM element whose rect the Spotter renders into; set once by the HUD */
+  setSpotterElement(el: HTMLElement | null): void;
+  /** fade the veil out over ms (KO) */
+  liftFog(ms: number): void;
   /** angle in deci-degrees from the shooter's forward, or null to drop the aim pose */
   setAim(side: Side, angleDd: number | null): void;
   squash(side: Side): void;
@@ -68,6 +74,7 @@ export function createDuelView(
   const stage = buildStageProfile(setup);
   gl.scene.add(buildStage(setup, stage));
   const shots = createShotLayer(gl.scene);
+  const fog = createFogVeil(gl.scene);
 
   const actors: [Actor, Actor] = [0, 1].map((i) => {
     const side = i as Side;
@@ -88,7 +95,15 @@ export function createDuelView(
   }) as [Actor, Actor];
 
   const camera = createDuelCamera(STAGE_WIDTH, 16 / 9);
+  camera.layers.enable(FOG_LAYER);
+  // the Spotter: a tight live crop of the opponent, ±2.2 units, no scale cue (GAME-DESIGN §2b)
+  const spotter = new OrthographicCamera(-2.2, 2.2, 2.8, -1.6, 0.1, 200);
+  spotter.position.set(stage.beanX[1], stage.beanY[1], 30);
+  spotter.layers.set(0);
+  let spotterEl: HTMLElement | null = null;
   let baseY = 0;
+  let liftFrom = 0;
+  let liftMs = 0;
   const layout = (): void => {
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -110,12 +125,42 @@ export function createDuelView(
   let stopUntil = 0;
   let now = 0;
 
+  const renderAll = (): void => {
+    const r = gl.renderer;
+    r.setScissorTest(false);
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    r.setViewport(0, 0, w, h);
+    r.render(gl.scene, camera);
+    if (spotterEl !== null) {
+      const rect = spotterEl.getBoundingClientRect();
+      const size = Math.round(rect.width);
+      const x = Math.round(rect.left);
+      const y = Math.round(h - rect.bottom);
+      r.setScissorTest(true);
+      r.setScissor(x, y, size, size);
+      r.setViewport(x, y, size, size);
+      r.clearDepth();
+      r.render(gl.scene, spotter);
+      r.setScissorTest(false);
+      r.setViewport(0, 0, w, h);
+    }
+  };
+
   return {
     stage,
     camera,
     scene: gl.scene,
     renderer: gl.renderer,
     shots,
+    fog,
+    setSpotterElement(el) {
+      spotterEl = el;
+    },
+    liftFog(ms) {
+      liftFrom = now;
+      liftMs = ms / 1000;
+    },
     setAim(side, angleDd) {
       const a = actors[side];
       a.aimTarget = angleDd;
@@ -136,17 +181,17 @@ export function createDuelView(
     frame(f) {
       now += f.dt;
       if (now < stopUntil) {
-        gl.renderer.render(gl.scene, camera);
+        renderAll();
         return;
       }
+      if (liftMs > 0) fog.setLift(Math.min(1, (now - liftFrom) / liftMs));
       const k = Math.min(1, f.dt / FOLLOW_S);
       for (const a of actors) {
         const target = a.aimTarget ?? 0;
         a.aimCurrent += (target - a.aimCurrent) * k;
         const rad = (a.aimCurrent / 10) * (Math.PI / 180);
-        a.machine.rotation.z = a.aimTarget === null ? 0 : rad * 0.6 * -1 + 0;
         // machines pivot on their base toward the aim; the far arm points along it
-        a.machine.rotation.z = -rad * 0.6;
+        a.machine.rotation.z = a.aimTarget === null ? 0 : -rad * 0.6;
         if (a.arm !== null) {
           a.arm.rotation.z = a.aimTarget === null ? 0 : Math.PI / 2 - rad;
           a.arm.rotation.x = a.aimTarget === null ? 0.35 : 0;
@@ -170,10 +215,11 @@ export function createDuelView(
         camera.position.x = STAGE_WIDTH / 2 + amp * 0.5 * Math.cos(phase * 1.3);
         if (shakeT <= 0) camera.position.set(STAGE_WIDTH / 2, baseY, 30);
       }
-      gl.renderer.render(gl.scene, camera);
+      renderAll();
     },
     dispose() {
       window.removeEventListener('resize', layout);
+      fog.dispose();
       gl.renderer.dispose();
     },
   };
